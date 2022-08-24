@@ -11,6 +11,12 @@ class Entity {
     this.h = h;
     this.img = img;
   }
+
+  setOffSet(x: number, y: number) {
+    this.x += x;
+    this.y += y;
+  }
+
   show() {
     image(this.img, this.x, this.y, this.w, this.h);
   }

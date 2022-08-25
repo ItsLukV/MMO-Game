@@ -3,17 +3,17 @@ let playerImg: p5.Image;
 let world: World;
 let tilesImg: p5.Image[];
 
-const GROUNDLEVEL = 700 - 100;
-
 function preload() {
   playerImg = loadImage("sketch/assets/Player.png");
   tilesImg = [];
   tilesImg.push(loadImage("sketch/assets/Air.png"));
   tilesImg.push(loadImage("sketch/assets/Grass.png"));
+  tilesImg.push(loadImage("sketch/assets/Stone.png"));
+  tilesImg.push(loadImage("sketch/assets/Bedrock.png"));
 }
 function setup() {
-  createCanvas(1000, 700);
-  player = new Player(0, 450, 100, 100, playerImg);
+  createCanvas(960, 640);
+  player = new Player(256, 450, 64, 64, playerImg);
   world = new World();
 }
 

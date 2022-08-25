@@ -3,11 +3,11 @@ class Grass extends Tile {
     super(x, y, w, id);
   }
 
-  show() {
+  public show(): void {
     image(tilesImg[this.id], this.x, this.y, this.w, this.w);
   }
 
-  isSoild(): boolean {
+  public isSoild(): boolean {
     return true;
   }
 }

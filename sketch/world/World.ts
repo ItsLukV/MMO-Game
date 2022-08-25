@@ -1,13 +1,17 @@
 class World {
-  private world: Array<Array<number>>;
-  tiles: Tile[][];
+  public world: Array<Array<number>>;
+  public tiles: Tile[][];
   constructor() {
     this.world = [
-      [0, 0, 0, 0, 0, 0, 1, 1, 1],
-      [0, 0, 0, 0, 0, 0, 1, 0, 1],
-      [0, 0, 0, 0, 0, 0, 1, 0, 1],
-      [0, 0, 0, 0, 0, 0, 1, 0, 1],
-      [0, 0, 0, 0, 0, 0, 1, 1, 1],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+      [3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3],
+      [3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3],
+      [3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3],
+      [3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3],
+      [3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3],
+      [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
     this.tiles = new Array(this.world.length);
     for (let i: number = 0; i < this.tiles.length; i++) {
@@ -22,17 +26,37 @@ class World {
       for (let j: number = 0; j < this.world[i].length; j++) {
         switch (this.world[i][j]) {
           case 0:
-            this.tiles[i][j] = new Air(i * 100, j * 100, 100, this.world[i][j]);
-            break;
-          case 1:
-            this.tiles[i][j] = new Grass(
-              i * 100,
-              j * 100,
-              100,
+            this.tiles[i][j] = new Air(
+              i * TileSize,
+              j * TileSize,
+              TileSize,
               this.world[i][j]
             );
             break;
-
+          case 1:
+            this.tiles[i][j] = new Grass(
+              i * TileSize,
+              j * TileSize,
+              TileSize,
+              this.world[i][j]
+            );
+            break;
+          case 2:
+            this.tiles[i][j] = new Stone(
+              i * TileSize,
+              j * TileSize,
+              TileSize,
+              this.world[i][j]
+            );
+            break;
+          case 3:
+            this.tiles[i][j] = new Bedrock(
+              i * TileSize,
+              j * TileSize,
+              TileSize,
+              this.world[i][j]
+            );
+            break;
           default:
             throw new Error(`No Tile with the id ${this.world[i][j]}`);
         }

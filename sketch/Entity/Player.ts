@@ -30,9 +30,22 @@ class Player extends Entity {
 
   tick() {
     this.tyndekraft();
-
     this.groundCollision();
     this.move();
+    let tilePos = GameWorldToTile(this.x, this.y);
+
+    if (world.tiles[tilePos.x][tilePos.y].isSoild()) {
+      if (this.x < tilePos.x * TileSize + this.w) {
+        this.xSpeed = 0;
+        this.x = (tilePos.x + 1) * TileSize;
+      }
+
+      // let buffer: number = 10;
+      // if (this.x < (tilePos.x - 1) * TileSize + this.w + buffer) {
+      //   this.xSpeed = 0;
+      //   this.x = tilePos.x * TileSize;
+      // }
+    }
     this.calcSpeed();
   }
 
@@ -47,7 +60,20 @@ class Player extends Entity {
   private groundCollision() {
     try {
       let tilePos = GameWorldToTile(this.x, this.y);
-      console.log(tilePos);
+
+      // Check left for player
+      if (world.tiles[tilePos.x][tilePos.y].isSoild()) {
+        if (this.x < tilePos.x * TileSize + this.w) {
+          this.xSpeed = 0;
+          this.x = (tilePos.x + 1) * TileSize;
+        }
+
+        // let buffer: number = 10;
+        // if (this.x < (tilePos.x - 1) * TileSize + this.w + buffer) {
+        //   this.xSpeed = 0;
+        //   this.x = tilePos.x * TileSize;
+        // }
+      }
 
       // Check under player
       if (world.tiles[tilePos.x][tilePos.y + 1].isSoild()) {
@@ -60,14 +86,6 @@ class Player extends Entity {
         this.jump = false;
       }
 
-      // Check left for player
-      if (world.tiles[tilePos.x - 1][tilePos.y].isSoild()) {
-        if (this.x > tilePos.x - 1 * TileSize) {
-          this.xSpeed = 0;
-          this.x = tilePos.x - 1 * TileSize;
-        }
-      }
-
       // Check right for player
       if (world.tiles[tilePos.x + 1][tilePos.y].isSoild()) {
         if (this.x + this.w > tilePos.x * TileSize) {
@@ -76,7 +94,7 @@ class Player extends Entity {
         }
       }
     } catch (e: unknown) {
-      console.log(e);
+      console.error(e);
     }
 
     // if (GROUNDLEVEL <= this.y + this.h) {

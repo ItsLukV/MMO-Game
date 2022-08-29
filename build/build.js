@@ -24,6 +24,10 @@ function draw() {
 }
 function keyPressed() {
     player.pressed(keyCode === 65, keyCode === 68, keyCode === 87, keyCode === 83);
+    if (keyCode === 32) {
+        player.x = 256;
+        player.y = 450;
+    }
 }
 function keyReleased() {
     player.released(keyCode === 65, keyCode === 68, keyCode === 87, keyCode === 83);
@@ -64,6 +68,13 @@ class Player extends Entity {
         this.tyndekraft();
         this.groundCollision();
         this.move();
+        let tilePos = GameWorldToTile(this.x, this.y);
+        if (world.tiles[tilePos.x][tilePos.y].isSoild()) {
+            if (this.x < tilePos.x * TileSize + this.w) {
+                this.xSpeed = 0;
+                this.x = (tilePos.x + 1) * TileSize;
+            }
+        }
         this.calcSpeed();
     }
     move() {
@@ -80,7 +91,12 @@ class Player extends Entity {
     groundCollision() {
         try {
             let tilePos = GameWorldToTile(this.x, this.y);
-            console.log(tilePos);
+            if (world.tiles[tilePos.x][tilePos.y].isSoild()) {
+                if (this.x < tilePos.x * TileSize + this.w) {
+                    this.xSpeed = 0;
+                    this.x = (tilePos.x + 1) * TileSize;
+                }
+            }
             if (world.tiles[tilePos.x][tilePos.y + 1].isSoild()) {
                 this.gravity = false;
                 this.jump = true;
@@ -91,12 +107,6 @@ class Player extends Entity {
                 this.gravity = true;
                 this.jump = false;
             }
-            if (world.tiles[tilePos.x - 1][tilePos.y].isSoild()) {
-                if (this.x > tilePos.x - 1 * TileSize) {
-                    this.xSpeed = 0;
-                    this.x = tilePos.x - 1 * TileSize;
-                }
-            }
             if (world.tiles[tilePos.x + 1][tilePos.y].isSoild()) {
                 if (this.x + this.w > tilePos.x * TileSize) {
                     this.xSpeed = 0;
@@ -105,7 +115,7 @@ class Player extends Entity {
             }
         }
         catch (e) {
-            console.log(e);
+            console.error(e);
         }
     }
     calcSpeed() {

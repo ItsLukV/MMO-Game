@@ -37,6 +37,10 @@ function keyPressed() {
     keyCode === 87,
     keyCode === 83
   );
+  if (keyCode === 32) {
+    player.x = 256;
+    player.y = 450;
+  }
 }
 
 function keyReleased() {

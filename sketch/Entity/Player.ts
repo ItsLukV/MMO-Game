@@ -30,9 +30,22 @@ class Player extends Entity {
 
   tick() {
     this.tyndekraft();
-
     this.groundCollision();
     this.move();
+    let tilePos = GameWorldToTile(this.x, this.y);
+
+    if (world.tiles[tilePos.x][tilePos.y].isSoild()) {
+      if (this.x < tilePos.x * TileSize + this.w) {
+        this.xSpeed = 0;
+        this.x = (tilePos.x + 1) * TileSize;
+      }
+
+      // let buffer: number = 10;
+      // if (this.x < (tilePos.x - 1) * TileSize + this.w + buffer) {
+      //   this.xSpeed = 0;
+      //   this.x = tilePos.x * TileSize;
+      // }
+    }
     this.calcSpeed();
   }
 
@@ -47,6 +60,23 @@ class Player extends Entity {
   private groundCollision() {
     try {
       let tilePos = GameWorldToTile(this.x, this.y);
+<<<<<<< HEAD
+=======
+
+      // Check left for player
+      if (world.tiles[tilePos.x][tilePos.y].isSoild()) {
+        if (this.x < tilePos.x * TileSize + this.w) {
+          this.xSpeed = 0;
+          this.x = (tilePos.x + 1) * TileSize;
+        }
+
+        // let buffer: number = 10;
+        // if (this.x < (tilePos.x - 1) * TileSize + this.w + buffer) {
+        //   this.xSpeed = 0;
+        //   this.x = tilePos.x * TileSize;
+        // }
+      }
+>>>>>>> 178f5a5e71b8d1f8017d334f48fc26d64af52478
 
       // Check under player
       if (world.tiles[tilePos.x][tilePos.y + 1].isSoild()) {
@@ -73,6 +103,7 @@ class Player extends Entity {
         this.jump = false;
       }
 
+<<<<<<< HEAD
       if (world.tiles[tilePos.x + 1][tilePos.y].isSoild()) {
         // Check right for player
         if (this.x + this.w / 2 > (tilePos.x + 1) * TileSize) {
@@ -83,12 +114,21 @@ class Player extends Entity {
       if (world.tiles[tilePos.x - 1][tilePos.y].isSoild()) {
         // Check left for player
         if (this.x - this.w / 2 < (tilePos.x - 1) * TileSize) {
+=======
+      // Check right for player
+      if (world.tiles[tilePos.x + 1][tilePos.y].isSoild()) {
+        if (this.x + this.w > tilePos.x * TileSize) {
+>>>>>>> 178f5a5e71b8d1f8017d334f48fc26d64af52478
           this.xSpeed = 0;
           this.x = tilePos.x * TileSize + this.w / 2;
         }
       }
     } catch (e: unknown) {
+<<<<<<< HEAD
       // console.log(e);
+=======
+      console.error(e);
+>>>>>>> 178f5a5e71b8d1f8017d334f48fc26d64af52478
     }
   }
 

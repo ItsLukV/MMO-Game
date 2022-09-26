@@ -24,6 +24,10 @@ function draw() {
 }
 function keyPressed() {
     player.pressed(keyCode === 65, keyCode === 68, keyCode === 87, keyCode === 83);
+    if (keyCode === 32) {
+        player.x = 256;
+        player.y = 450;
+    }
 }
 function keyReleased() {
     player.released(keyCode === 65, keyCode === 68, keyCode === 87, keyCode === 83);
@@ -66,7 +70,9 @@ class Player extends Entity {
     tick() {
         this.tyndekraft();
         this.groundCollision();
+        this.wallCollision();
         this.move();
+        let tilePos = GameWorldToTile(this.x, this.y);
         this.calcSpeed();
     }
     move() {
@@ -83,27 +89,27 @@ class Player extends Entity {
     groundCollision() {
         try {
             let tilePos = GameWorldToTile(this.x, this.y);
-            if (world.tiles[tilePos.x][tilePos.y + 1].isSoild()) {
-                if (this.y + this.h / 2 >= (tilePos.y + 1) * TileSize) {
-                    let left = GameWorldToTile(this.x - this.w / 2, this.y + this.h / 2);
-                    let right = GameWorldToTile(this.x + this.w / 2, this.y + this.h / 2);
-                    if (world.tiles[left.x][left.y].isSoild() ||
-                        world.tiles[right.x][right.y].isSoild()) {
-                        this.gravity = false;
-                        this.jump = true;
-                        this.ySpeed = 0;
-                        this.y = tilePos.y * TileSize + this.h / 2;
-                    }
-                    this.gravity = false;
-                    this.jump = true;
-                    this.ySpeed = 0;
-                    this.y = tilePos.y * TileSize + this.h / 2;
-                }
+            let right = GameWorldToTile(this.x - this.w / 2, this.y + this.w / 2);
+            ellipse(right.x * TileSize + TileSize, right.y * TileSize, 50, 50);
+            ellipse(this.x - this.w / 2, this.y + this.w / 2, 50, 50);
+            if (world.tiles[tilePos.x - 1][tilePos.y + 1].isSoild()) {
+                this.gravity = false;
+                this.jump = true;
+                this.ySpeed = 0;
+                this.y = tilePos.y * TileSize + this.h / 2;
             }
             else {
                 this.gravity = true;
                 this.jump = false;
             }
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+    wallCollision() {
+        try {
+            let tilePos = GameWorldToTile(this.x, this.y);
             if (world.tiles[tilePos.x + 1][tilePos.y].isSoild()) {
                 if (this.x + this.w / 2 > (tilePos.x + 1) * TileSize) {
                     this.xSpeed = 0;
@@ -111,13 +117,14 @@ class Player extends Entity {
                 }
             }
             if (world.tiles[tilePos.x - 1][tilePos.y].isSoild()) {
-                if (this.x - this.w / 2 < (tilePos.x - 1) * TileSize) {
+                if (this.x - this.w / 2 < tilePos.x * TileSize) {
                     this.xSpeed = 0;
-                    this.x = tilePos.x * TileSize + this.w / 2;
+                    this.x = (tilePos.x + 1) * TileSize - this.w / 2;
                 }
             }
         }
-        catch (e) {
+        catch (error) {
+            console.error(error);
         }
     }
     calcSpeed() {
@@ -195,15 +202,15 @@ class Tile {
 class World {
     constructor() {
         this.world = [
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
-            [3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3],
-            [3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3],
-            [3, 1, 0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 3],
-            [3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3],
-            [3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3],
-            [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+            [3, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+            [3, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+            [3, 1, 0, 0, 0, 0, 0, 0, 1, 3],
+            [3, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+            [3, 0, 0, 0, 0, 0, 0, 0, 1, 3],
+            [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+            [0, 0, 0, 0, 0, 0, 0, 0, 3, 0],
         ];
         this.tiles = new Array(this.world.length);
         for (let i = 0; i < this.tiles.length; i++) {

@@ -31,21 +31,10 @@ class Player extends Entity {
   tick() {
     this.tyndekraft();
     this.groundCollision();
+    this.wallCollision();
     this.move();
     let tilePos = GameWorldToTile(this.x, this.y);
 
-    if (world.tiles[tilePos.x][tilePos.y].isSoild()) {
-      if (this.x < tilePos.x * TileSize + this.w) {
-        this.xSpeed = 0;
-        this.x = (tilePos.x + 1) * TileSize;
-      }
-
-      // let buffer: number = 10;
-      // if (this.x < (tilePos.x - 1) * TileSize + this.w + buffer) {
-      //   this.xSpeed = 0;
-      //   this.x = tilePos.x * TileSize;
-      // }
-    }
     this.calcSpeed();
   }
 
@@ -60,75 +49,54 @@ class Player extends Entity {
   private groundCollision() {
     try {
       let tilePos = GameWorldToTile(this.x, this.y);
-<<<<<<< HEAD
-=======
 
-      // Check left for player
-      if (world.tiles[tilePos.x][tilePos.y].isSoild()) {
-        if (this.x < tilePos.x * TileSize + this.w) {
-          this.xSpeed = 0;
-          this.x = (tilePos.x + 1) * TileSize;
-        }
-
-        // let buffer: number = 10;
-        // if (this.x < (tilePos.x - 1) * TileSize + this.w + buffer) {
-        //   this.xSpeed = 0;
-        //   this.x = tilePos.x * TileSize;
-        // }
-      }
->>>>>>> 178f5a5e71b8d1f8017d334f48fc26d64af52478
-
+      let right = GameWorldToTile(this.x - this.w / 2, this.y + this.w / 2);
+      ellipse(right.x * TileSize + TileSize, right.y * TileSize, 50, 50);
+      ellipse(this.x - this.w / 2, this.y + this.w / 2, 50, 50);
       // Check under player
-      if (world.tiles[tilePos.x][tilePos.y + 1].isSoild()) {
-        if (this.y + this.h / 2 >= (tilePos.y + 1) * TileSize) {
-          // Check if under corners is a soild tile
-          let left = GameWorldToTile(this.x - this.w / 2, this.y + this.h / 2);
-          let right = GameWorldToTile(this.x + this.w / 2, this.y + this.h / 2);
-          if (
-            world.tiles[left.x][left.y].isSoild() ||
-            world.tiles[right.x][right.y].isSoild()
-          ) {
-            this.gravity = false;
-            this.jump = true;
-            this.ySpeed = 0;
-            this.y = tilePos.y * TileSize + this.h / 2;
-          }
-          this.gravity = false;
-          this.jump = true;
-          this.ySpeed = 0;
-          this.y = tilePos.y * TileSize + this.h / 2;
-        }
+      if (world.tiles[tilePos.x - 1][tilePos.y + 1].isSoild()) {
+        // if (this.y + this.h / 2 >= (tilePos.y + 1) * TileSize) {
+        // Check if under corners is a soild tile
+        // if (world.tiles[right.x][right.y].isSoild()) {
+        // if (right.x * TileSize < this.x - this.w / 2) {
+        this.gravity = false;
+        this.jump = true;
+        this.ySpeed = 0;
+        this.y = tilePos.y * TileSize + this.h / 2;
+        // }
+        // }
+
+        // }
       } else {
         this.gravity = true;
         this.jump = false;
       }
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
-<<<<<<< HEAD
+  private wallCollision() {
+    try {
+      let tilePos = GameWorldToTile(this.x, this.y);
+
+      // Check right for player
       if (world.tiles[tilePos.x + 1][tilePos.y].isSoild()) {
-        // Check right for player
         if (this.x + this.w / 2 > (tilePos.x + 1) * TileSize) {
           this.xSpeed = 0;
           this.x = tilePos.x * TileSize + this.w / 2;
         }
       }
+
+      // Check left for player
       if (world.tiles[tilePos.x - 1][tilePos.y].isSoild()) {
-        // Check left for player
-        if (this.x - this.w / 2 < (tilePos.x - 1) * TileSize) {
-=======
-      // Check right for player
-      if (world.tiles[tilePos.x + 1][tilePos.y].isSoild()) {
-        if (this.x + this.w > tilePos.x * TileSize) {
->>>>>>> 178f5a5e71b8d1f8017d334f48fc26d64af52478
+        if (this.x - this.w / 2 < tilePos.x * TileSize) {
           this.xSpeed = 0;
-          this.x = tilePos.x * TileSize + this.w / 2;
+          this.x = (tilePos.x + 1) * TileSize - this.w / 2;
         }
       }
-    } catch (e: unknown) {
-<<<<<<< HEAD
-      // console.log(e);
-=======
-      console.error(e);
->>>>>>> 178f5a5e71b8d1f8017d334f48fc26d64af52478
+    } catch (error) {
+      console.error(error);
     }
   }
 

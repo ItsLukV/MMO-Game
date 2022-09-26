@@ -18,6 +18,9 @@ class Entity {
   }
 
   show() {
+    push();
+    imageMode(CENTER);
     image(this.img, this.x, this.y, this.w, this.h);
+    pop();
   }
 }

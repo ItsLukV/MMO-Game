@@ -41,7 +41,10 @@ class Entity {
         this.y += y;
     }
     show() {
+        push();
+        imageMode(CENTER);
         image(this.img, this.x, this.y, this.w, this.h);
+        pop();
     }
 }
 class Player extends Entity {
@@ -80,32 +83,41 @@ class Player extends Entity {
     groundCollision() {
         try {
             let tilePos = GameWorldToTile(this.x, this.y);
-            console.log(tilePos);
             if (world.tiles[tilePos.x][tilePos.y + 1].isSoild()) {
-                this.gravity = false;
-                this.jump = true;
-                this.ySpeed = 0;
-                this.y = tilePos.y * TileSize;
+                if (this.y + this.h / 2 >= (tilePos.y + 1) * TileSize) {
+                    let left = GameWorldToTile(this.x - this.w / 2, this.y + this.h / 2);
+                    let right = GameWorldToTile(this.x + this.w / 2, this.y + this.h / 2);
+                    if (world.tiles[left.x][left.y].isSoild() ||
+                        world.tiles[right.x][right.y].isSoild()) {
+                        this.gravity = false;
+                        this.jump = true;
+                        this.ySpeed = 0;
+                        this.y = tilePos.y * TileSize + this.h / 2;
+                    }
+                    this.gravity = false;
+                    this.jump = true;
+                    this.ySpeed = 0;
+                    this.y = tilePos.y * TileSize + this.h / 2;
+                }
             }
             else {
                 this.gravity = true;
                 this.jump = false;
             }
-            if (world.tiles[tilePos.x - 1][tilePos.y].isSoild()) {
-                if (this.x > tilePos.x - 1 * TileSize) {
+            if (world.tiles[tilePos.x + 1][tilePos.y].isSoild()) {
+                if (this.x + this.w / 2 > (tilePos.x + 1) * TileSize) {
                     this.xSpeed = 0;
-                    this.x = tilePos.x - 1 * TileSize;
+                    this.x = tilePos.x * TileSize + this.w / 2;
                 }
             }
-            if (world.tiles[tilePos.x + 1][tilePos.y].isSoild()) {
-                if (this.x + this.w > tilePos.x * TileSize) {
+            if (world.tiles[tilePos.x - 1][tilePos.y].isSoild()) {
+                if (this.x - this.w / 2 < (tilePos.x - 1) * TileSize) {
                     this.xSpeed = 0;
-                    this.x = tilePos.x * TileSize;
+                    this.x = tilePos.x * TileSize + this.w / 2;
                 }
             }
         }
         catch (e) {
-            console.log(e);
         }
     }
     calcSpeed() {
@@ -155,7 +167,6 @@ class Objects {
         image(this.img, this.x, this.y, this.w, this.h);
     }
 }
-const GROUNDLEVEL = 640 - 64;
 const TileSize = 64;
 function GameWorldToTile(x, y) {
     let x2 = Math.floor(x / TileSize);
@@ -188,7 +199,7 @@ class World {
             [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
             [3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3],
             [3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3],
-            [3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3],
+            [3, 1, 0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 3],
             [3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3],
             [3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3],
             [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],

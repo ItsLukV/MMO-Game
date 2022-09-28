@@ -1,7 +1,15 @@
-let player: Player;
 let playerImg: p5.Image;
-let world: World;
 let tilesImg: p5.Image[];
+let menu: Menu;
+let game: Game;
+let world: World;
+let worldGenerator: WorldGenerator;
+enum GameStateList {
+  Menu,
+  Playing,
+  WorldGen,
+}
+let gameState: GameStateList = GameStateList.Menu;
 
 function preload() {
   playerImg = loadImage("sketch/assets/Player.png");
@@ -13,41 +21,58 @@ function preload() {
 }
 function setup() {
   createCanvas(960, 640);
-  player = new Player(256, 450, 64, 64, playerImg);
   world = new World();
+
+  worldGenerator = new WorldGenerator(world);
+  world.setWorld(worldGenerator.getWorld());
+
+  game = new Game(world);
+  menu = new Menu();
 }
 
 function draw() {
   background(220);
-
-  translate(
-    width / 2 - player.x - player.w / 2,
-    height / 2 - player.y - player.h / 2
-  );
-
-  player.tick();
-
-  world.show();
-  player.show();
+  switch (gameState) {
+    case GameStateList.Menu:
+      menu.show();
+      break;
+    case GameStateList.Playing:
+      game.tick();
+      break;
+    case GameStateList.WorldGen:
+      break;
+    default:
+      throw "Missing GameState";
+  }
 }
 function keyPressed() {
-  player.pressed(
-    keyCode === 65,
-    keyCode === 68,
-    keyCode === 87,
-    keyCode === 83
-  );
-  if (keyCode === 32) {
-    player.x = 256;
-    player.y = 450;
+  switch (gameState) {
+    case GameStateList.Menu:
+      break;
+    case GameStateList.Playing:
+      game.pressed();
+      break;
+    case GameStateList.WorldGen:
+      break;
+    default:
+      throw "Missing GameState";
   }
 }
 
 function keyReleased() {
-  player.released(
-    keyCode === 65,
-    keyCode === 68,
-    keyCode === 87,
-    keyCode === 83
-  );
+  switch (gameState) {
+    case GameStateList.Menu:
+      break;
+    case GameStateList.Playing:
+      game.released();
+      break;
+    case GameStateList.WorldGen:
+      break;
+    default:
+      throw "Missing GameState";
+  }
+}
+
+function mousePressed() {
+  menu.clicked();
 }

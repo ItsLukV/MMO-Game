@@ -1,0 +1,14 @@
+"filename", "language", "TypeScript", "comment", "blank", "total"
+"c:\repos\MMO-Game\MMO-Game\sketch\Entity\Entity.ts", "TypeScript", 24, 0, 3, 27
+"c:\repos\MMO-Game\MMO-Game\sketch\Entity\Player.ts", "TypeScript", 115, 3, 15, 133
+"c:\repos\MMO-Game\MMO-Game\sketch\Object\Objects.ts", "TypeScript", 21, 0, 4, 25
+"c:\repos\MMO-Game\MMO-Game\sketch\sketch.ts", "TypeScript", 47, 0, 7, 54
+"c:\repos\MMO-Game\MMO-Game\sketch\utilities\Constants.ts", "TypeScript", 2, 1, 1, 4
+"c:\repos\MMO-Game\MMO-Game\sketch\utilities\Utiles.ts", "TypeScript", 14, 0, 3, 17
+"c:\repos\MMO-Game\MMO-Game\sketch\world\Tile.ts", "TypeScript", 18, 0, 3, 21
+"c:\repos\MMO-Game\MMO-Game\sketch\world\Tiles\Air.ts", "TypeScript", 11, 0, 3, 14
+"c:\repos\MMO-Game\MMO-Game\sketch\world\Tiles\Bedrock.ts", "TypeScript", 11, 0, 3, 14
+"c:\repos\MMO-Game\MMO-Game\sketch\world\Tiles\Grass.ts", "TypeScript", 11, 0, 3, 14
+"c:\repos\MMO-Game\MMO-Game\sketch\world\Tiles\Stone.ts", "TypeScript", 11, 0, 3, 14
+"c:\repos\MMO-Game\MMO-Game\sketch\world\World.ts", "TypeScript", 71, 0, 3, 74
+"Total", "-", 356, 4, 51, 411

@@ -1,16 +1,33 @@
-function GameWorldToTile(x: number, y: number): GameWorldToTileType {
-  let x2 = Math.floor(x / TileSize);
-  let y2 = Math.floor(y / TileSize);
-  return { x: x2, y: y2 };
+function GameWorldToTile(x: number, y: number): Coords {
+  x = Math.floor(x / TILE_SIZE);
+  y = Math.floor(y / TILE_SIZE);
+  return { x: x, y: y };
 }
 
-function TileLookUp(x: number, y: number) {
-  let tileCoords = GameWorldToTile(x, y);
-  let tile = world.world[tileCoords.x][tileCoords.y];
-  return tile;
+function TileToGameWorld(x: number, y: number): Coords {
+  x *= TILE_SIZE;
+  y *= TILE_SIZE;
+  return { x, y };
 }
 
-interface GameWorldToTileType {
+function TileLookUp(x: number, y: number): Tile {
+  try {
+    let tileCoords = GameWorldToTile(x, y);
+    let tile = game.world.tiles[tileCoords.x][tileCoords.y];
+    return tile;
+  } catch (error) {
+    switch (error.message) {
+      case "game.world.tiles[tileCoords.x] is undefined":
+        throw new Error("Mouse is outside of the grid");
+      case "game.world.tiles[tileCoords.y] is undefined":
+        throw new Error("Mouse is outside of the grid");
+      default:
+        console.error(error);
+    }
+  }
+}
+
+interface Coords {
   x: number;
   y: number;
 }

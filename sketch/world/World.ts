@@ -1,5 +1,5 @@
 class World {
-  public world: Array<Array<number>>;
+  public world: number[][];
   public tiles: Tile[][];
   constructor() {
     this.world = [
@@ -13,6 +13,7 @@ class World {
       [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
       [0, 0, 0, 0, 0, 0, 0, 0, 3, 0],
     ];
+
     this.tiles = new Array(this.world.length);
     for (let i: number = 0; i < this.tiles.length; i++) {
       this.tiles[i] = new Array(this.world[i].length);
@@ -27,33 +28,33 @@ class World {
         switch (this.world[i][j]) {
           case 0:
             this.tiles[i][j] = new Air(
-              i * TileSize,
-              j * TileSize,
-              TileSize,
+              i * TILE_SIZE,
+              j * TILE_SIZE,
+              TILE_SIZE,
               this.world[i][j]
             );
             break;
           case 1:
             this.tiles[i][j] = new Grass(
-              i * TileSize,
-              j * TileSize,
-              TileSize,
+              i * TILE_SIZE,
+              j * TILE_SIZE,
+              TILE_SIZE,
               this.world[i][j]
             );
             break;
           case 2:
             this.tiles[i][j] = new Stone(
-              i * TileSize,
-              j * TileSize,
-              TileSize,
+              i * TILE_SIZE,
+              j * TILE_SIZE,
+              TILE_SIZE,
               this.world[i][j]
             );
             break;
           case 3:
             this.tiles[i][j] = new Bedrock(
-              i * TileSize,
-              j * TileSize,
-              TileSize,
+              i * TILE_SIZE,
+              j * TILE_SIZE,
+              TILE_SIZE,
               this.world[i][j]
             );
             break;
@@ -64,10 +65,15 @@ class World {
     }
   }
 
-  show() {
+  public show() {
     for (let i: number = 0; i < this.world.length; i++) {
       for (let j: number = 0; j < this.world[i].length; j++)
         this.tiles[i][j].show();
     }
+  }
+
+  public setWorld(world: number[][]) {
+    this.world = world;
+    this.load();
   }
 }

@@ -1,7 +1,58 @@
-let player;
+class Game {
+    constructor(world) {
+        this.world = world;
+        this.player = new Player(256, 450, PLAYER_SIZE, PLAYER_SIZE, playerImg);
+        this.OFFSETX = width / 2 - this.player.x - this.player.w / 2;
+        this.OFFSETY = height / 2 - this.player.y - this.player.h / 2;
+    }
+    tick() {
+        translate(this.OFFSETX, this.OFFSETY);
+        this.player.tick();
+        this.world.show();
+        this.player.show();
+        this.mouseHover();
+    }
+    pressed() {
+        this.player.pressed(keyCode === 65, keyCode === 68, keyCode === 87, keyCode === 83);
+        if (keyCode === 32) {
+            this.player.x = 256;
+            this.player.y = 450;
+        }
+    }
+    released() {
+        this.player.released(keyCode === 65, keyCode === 68, keyCode === 87, keyCode === 83);
+    }
+    getWorld() {
+        return this.world;
+    }
+    mouseHover() {
+        try {
+            if (!TileLookUp(mouseX - this.OFFSETX, mouseY - this.OFFSETY).isSoild())
+                return;
+            push();
+            let mouseTile = GameWorldToTile(mouseX - this.OFFSETX, mouseY - this.OFFSETY);
+            let mousePos = TileToGameWorld(mouseTile.x, mouseTile.y);
+            noFill();
+            strokeWeight(5);
+            rect(mousePos.x, mousePos.y, TILE_SIZE, TILE_SIZE);
+            pop();
+        }
+        catch (error) { }
+    }
+}
 let playerImg;
-let world;
 let tilesImg;
+let menu;
+let game;
+let world;
+let worldGenerator;
+var GameStateList;
+(function (GameStateList) {
+    GameStateList[GameStateList["Menu"] = 0] = "Menu";
+    GameStateList[GameStateList["Playing"] = 1] = "Playing";
+    GameStateList[GameStateList["WorldGen"] = 2] = "WorldGen";
+})(GameStateList || (GameStateList = {}));
+let gameState = GameStateList.Menu;
 function preload() {
     playerImg = loadImage("sketch/assets/Player.png");
     tilesImg = [];
@@ -12,25 +63,55 @@ function preload() {
 }
 function setup() {
     createCanvas(960, 640);
-    player = new Player(256, 450, 64, 64, playerImg);
     world = new World();
+    worldGenerator = new WorldGenerator(world);
+    world.setWorld(worldGenerator.getWorld());
+    game = new Game(world);
+    menu = new Menu();
 }
 function draw() {
     background(220);
-    translate(width / 2 - player.x - player.w / 2, height / 2 - player.y - player.h / 2);
-    player.tick();
-    world.show();
-    player.show();
+    switch (gameState) {
+        case GameStateList.Menu:
+            menu.show();
+            break;
+        case GameStateList.Playing:
+            game.tick();
+            break;
+        case GameStateList.WorldGen:
+            break;
+        default:
+            throw "Missing GameState";
+    }
 }
 function keyPressed() {
-    player.pressed(keyCode === 65, keyCode === 68, keyCode === 87, keyCode === 83);
-    if (keyCode === 32) {
-        player.x = 256;
-        player.y = 450;
+    switch (gameState) {
+        case GameStateList.Menu:
+            break;
+        case GameStateList.Playing:
+            game.pressed();
+            break;
+        case GameStateList.WorldGen:
+            break;
+        default:
+            throw "Missing GameState";
     }
 }
 function keyReleased() {
-    player.released(keyCode === 65, keyCode === 68, keyCode === 87, keyCode === 83);
+    switch (gameState) {
+        case GameStateList.Menu:
+            break;
+        case GameStateList.Playing:
+            game.released();
+            break;
+        case GameStateList.WorldGen:
+            break;
+        default:
+            throw "Missing GameState";
+    }
+}
+function mousePressed() {
+    menu.clicked();
 }
 class Entity {
     constructor(x, y, w, h, img) {
@@ -60,7 +141,7 @@ class Player extends Entity {
         this.ySpeed = 0;
         this.airRes = 0.8;
         this.walkSpeed = 2;
-        this.JumbBoost = 50;
+        this.JumbBoost = 40;
         this.jump = true;
         this.up = false;
         this.down = false;
@@ -69,8 +150,9 @@ class Player extends Entity {
     }
     tick() {
         this.tyndekraft();
-        this.groundCollision();
         this.wallCollision();
+        this.groundCollision();
+        this.wallRoof();
         this.move();
         let tilePos = GameWorldToTile(this.x, this.y);
         this.calcSpeed();
@@ -89,14 +171,14 @@ class Player extends Entity {
     groundCollision() {
         try {
             let tilePos = GameWorldToTile(this.x, this.y);
-            let right = GameWorldToTile(this.x - this.w / 2, this.y + this.w / 2);
-            ellipse(right.x * TileSize + TileSize, right.y * TileSize, 50, 50);
-            ellipse(this.x - this.w / 2, this.y + this.w / 2, 50, 50);
-            if (world.tiles[tilePos.x - 1][tilePos.y + 1].isSoild()) {
+            let leftCorner = GameWorldToTile(this.x + this.w / 2, this.y + this.h / 2);
+            let rightCorner = GameWorldToTile(this.x - this.w / 2, this.y + this.h / 2);
+            if (game.world.tiles[rightCorner.x][rightCorner.y].isSoild() ||
+                game.world.tiles[leftCorner.x][leftCorner.y].isSoild()) {
                 this.gravity = false;
                 this.jump = true;
                 this.ySpeed = 0;
-                this.y = tilePos.y * TileSize + this.h / 2;
+                this.y = (tilePos.y + 1) * TILE_SIZE - this.h / 2;
             }
             else {
                 this.gravity = true;
@@ -110,17 +192,41 @@ class Player extends Entity {
     wallCollision() {
         try {
             let tilePos = GameWorldToTile(this.x, this.y);
-            if (world.tiles[tilePos.x + 1][tilePos.y].isSoild()) {
-                if (this.x + this.w / 2 > (tilePos.x + 1) * TileSize) {
+            if (game.world.tiles[tilePos.x + 1][tilePos.y].isSoild()) {
+                if (this.x + this.w / 2 > (tilePos.x + 1) * TILE_SIZE) {
                     this.xSpeed = 0;
-                    this.x = tilePos.x * TileSize + this.w / 2;
+                    this.x = (tilePos.x + 1) * TILE_SIZE - this.w / 2 - 1;
                 }
             }
-            if (world.tiles[tilePos.x - 1][tilePos.y].isSoild()) {
-                if (this.x - this.w / 2 < tilePos.x * TileSize) {
+            if (game.world.tiles[tilePos.x - 1][tilePos.y].isSoild()) {
+                if (this.x - this.w / 2 < tilePos.x * TILE_SIZE) {
                     this.xSpeed = 0;
-                    this.x = (tilePos.x + 1) * TileSize - this.w / 2;
+                    this.x = tilePos.x * TILE_SIZE + this.w / 2;
                 }
+            }
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+    wallRoof() {
+        try {
+            let tilePos = GameWorldToTile(this.x, this.y);
+            let left = GameWorldToTile(this.x - this.w / 2, this.y - this.w / 2);
+            let right = GameWorldToTile(this.x + this.w / 2, this.y - this.h / 2);
+            if (game.world.tiles[left.x][left.y].isSoild() ||
+                game.world.tiles[right.x][right.y].isSoild()) {
+                this.ySpeed = 0;
+                this.y = (right.y + 1) * TILE_SIZE + this.h / 2 + 1;
+            }
+            if (game.world.tiles[left.x][left.y - 1].isSoild() ||
+                game.world.tiles[right.x][right.y - 1].isSoild()) {
+                if (this.y - this.h / 2 < right.y * TILE_SIZE + 1) {
+                    this.ySpeed = 0;
+                    this.y = right.y * TILE_SIZE + this.h / 2 + 1;
+                }
+            }
+            else {
             }
         }
         catch (error) {
@@ -158,6 +264,87 @@ class Player extends Entity {
             this.ySpeed += this.GRAVITYSPEED;
     }
 }
+class Menu {
+    constructor() {
+        this.startBtn = new StartButton("Start", width / 2 - 100, height / 3 - 50, 200, 100);
+        this.worldGen = new WorldGenButton("World Gen", width / 2 - 100, (height / 3) * 2 - 50, 200, 100);
+    }
+    show() {
+        this.startBtn.show();
+        this.startBtn.hover();
+        this.worldGen.show();
+        this.worldGen.hover();
+    }
+    clicked() {
+        this.startBtn.clicked();
+        this.worldGen.clicked();
+    }
+}
+class Buttons {
+    constructor(txt, x, y, w, h, txtSize) {
+        this.txt = txt;
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+        txtSize ? this.txtSize : (this.txtSize = 30);
+        this.backgroundColor = 255;
+    }
+    show() {
+        push();
+        fill(this.backgroundColor);
+        stroke(0);
+        textSize(this.txtSize);
+        rect(this.x, this.y, this.w, this.h);
+        textAlign(CENTER);
+        let textheight = textAscent() + textDescent();
+        fill(0);
+        text(this.txt, this.x, this.y + this.h / 2 - textheight / 2, this.w, this.h);
+        pop();
+    }
+    hover() {
+        if (this.mouseCollions()) {
+            this.backgroundColor = 220;
+        }
+        else {
+            this.backgroundColor = 255;
+        }
+    }
+    clicked() { }
+    mouseCollions() {
+        if (mouseX > this.x && mouseX < this.x + this.w) {
+            if (mouseY > this.y && mouseY < this.y + this.h) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return false;
+        }
+    }
+}
+class StartButton extends Buttons {
+    constructor(txt, x, y, w, h, txtSize) {
+        super(txt, x, y, w, h, txtSize);
+    }
+    clicked() {
+        if (this.mouseCollions()) {
+            gameState = GameStateList.Playing;
+        }
+    }
+}
+class WorldGenButton extends Buttons {
+    constructor(txt, x, y, w, h, txtSize) {
+        super(txt, x, y, w, h, txtSize);
+    }
+    clicked() {
+        if (this.mouseCollions()) {
+            gameState = GameStateList.WorldGen;
+        }
+    }
+}
 class Objects {
     constructor(x, y, w, h, img) {
         this.x = x;
@@ -174,16 +361,36 @@ class Objects {
         image(this.img, this.x, this.y, this.w, this.h);
     }
 }
-const TileSize = 64;
+const TILE_SIZE = 64;
+const PLAYER_SIZE = 32;
+const WORLDHEIGHT = 10;
+const WORLDWIDTH = 10;
 function GameWorldToTile(x, y) {
-    let x2 = Math.floor(x / TileSize);
-    let y2 = Math.floor(y / TileSize);
-    return { x: x2, y: y2 };
+    x = Math.floor(x / TILE_SIZE);
+    y = Math.floor(y / TILE_SIZE);
+    return { x: x, y: y };
+}
+function TileToGameWorld(x, y) {
+    x *= TILE_SIZE;
+    y *= TILE_SIZE;
+    return { x, y };
 }
 function TileLookUp(x, y) {
-    let tileCoords = GameWorldToTile(x, y);
-    let tile = world.world[tileCoords.x][tileCoords.y];
-    return tile;
+    try {
+        let tileCoords = GameWorldToTile(x, y);
+        let tile = game.world.tiles[tileCoords.x][tileCoords.y];
+        return tile;
+    }
+    catch (error) {
+        switch (error.message) {
+            case "game.world.tiles[tileCoords.x] is undefined":
+                throw new Error("Mouse is outside of the grid");
+            case "game.world.tiles[tileCoords.y] is undefined":
+                throw new Error("Mouse is outside of the grid");
+            default:
+                console.error(error);
+        }
+    }
 }
 class Tile {
     constructor(x, y, w, id) {
@@ -224,16 +431,16 @@ class World {
             for (let j = 0; j < this.world[i].length; j++) {
                 switch (this.world[i][j]) {
                     case 0:
-                        this.tiles[i][j] = new Air(i * TileSize, j * TileSize, TileSize, this.world[i][j]);
+                        this.tiles[i][j] = new Air(i * TILE_SIZE, j * TILE_SIZE, TILE_SIZE, this.world[i][j]);
                         break;
                     case 1:
-                        this.tiles[i][j] = new Grass(i * TileSize, j * TileSize, TileSize, this.world[i][j]);
+                        this.tiles[i][j] = new Grass(i * TILE_SIZE, j * TILE_SIZE, TILE_SIZE, this.world[i][j]);
                         break;
                     case 2:
-                        this.tiles[i][j] = new Stone(i * TileSize, j * TileSize, TileSize, this.world[i][j]);
+                        this.tiles[i][j] = new Stone(i * TILE_SIZE, j * TILE_SIZE, TILE_SIZE, this.world[i][j]);
                         break;
                     case 3:
-                        this.tiles[i][j] = new Bedrock(i * TileSize, j * TileSize, TileSize, this.world[i][j]);
+                        this.tiles[i][j] = new Bedrock(i * TILE_SIZE, j * TILE_SIZE, TILE_SIZE, this.world[i][j]);
                         break;
                     default:
                         throw new Error(`No Tile with the id ${this.world[i][j]}`);
@@ -246,6 +453,30 @@ class World {
             for (let j = 0; j < this.world[i].length; j++)
                 this.tiles[i][j].show();
         }
+    }
+    setWorld(world) {
+        this.world = world;
+        this.load();
+    }
+}
+class WorldGenerator {
+    constructor(world) {
+        this.world = new Array(WORLDHEIGHT);
+        for (let i = 0; i < WORLDHEIGHT; i++) {
+            this.world[i] = new Array(WORLDWIDTH);
+        }
+        for (let i = 0; i < this.world.length; i++) {
+            for (let j = 0; j < this.world[i].length; j++) {
+                this.world[i][j] = 0;
+            }
+        }
+        for (let i = 0; i < this.world.length; i++) {
+            this.world[i][this.world.length - 1] = 3;
+        }
+        this.world[this.world.length - 5][this.world.length - 2] = 2;
+    }
+    getWorld() {
+        return this.world;
     }
 }
 class Air extends Tile {

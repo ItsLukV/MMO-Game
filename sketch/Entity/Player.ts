@@ -20,7 +20,7 @@ class Player extends Entity {
     this.ySpeed = 0;
     this.airRes = 0.8;
     this.walkSpeed = 2;
-    this.JumbBoost = 50;
+    this.JumbBoost = 40;
     this.jump = true;
     this.up = false;
     this.down = false;
@@ -30,8 +30,9 @@ class Player extends Entity {
 
   tick() {
     this.tyndekraft();
-    this.groundCollision();
     this.wallCollision();
+    this.groundCollision();
+    this.wallRoof();
     this.move();
     let tilePos = GameWorldToTile(this.x, this.y);
 
@@ -45,28 +46,26 @@ class Player extends Entity {
     if (this.down) this.ySpeed += this.walkSpeed;
   }
 
-  // TODO Make collison with other tiles than Ground
   private groundCollision() {
     try {
       let tilePos = GameWorldToTile(this.x, this.y);
-
-      let right = GameWorldToTile(this.x - this.w / 2, this.y + this.w / 2);
-      ellipse(right.x * TileSize + TileSize, right.y * TileSize, 50, 50);
-      ellipse(this.x - this.w / 2, this.y + this.w / 2, 50, 50);
+      let leftCorner = GameWorldToTile(
+        this.x + this.w / 2,
+        this.y + this.h / 2
+      );
+      let rightCorner = GameWorldToTile(
+        this.x - this.w / 2,
+        this.y + this.h / 2
+      );
       // Check under player
-      if (world.tiles[tilePos.x - 1][tilePos.y + 1].isSoild()) {
-        // if (this.y + this.h / 2 >= (tilePos.y + 1) * TileSize) {
-        // Check if under corners is a soild tile
-        // if (world.tiles[right.x][right.y].isSoild()) {
-        // if (right.x * TileSize < this.x - this.w / 2) {
+      if (
+        game.world.tiles[rightCorner.x][rightCorner.y].isSoild() ||
+        game.world.tiles[leftCorner.x][leftCorner.y].isSoild()
+      ) {
         this.gravity = false;
         this.jump = true;
         this.ySpeed = 0;
-        this.y = tilePos.y * TileSize + this.h / 2;
-        // }
-        // }
-
-        // }
+        this.y = (tilePos.y + 1) * TILE_SIZE - this.h / 2;
       } else {
         this.gravity = true;
         this.jump = false;
@@ -81,19 +80,48 @@ class Player extends Entity {
       let tilePos = GameWorldToTile(this.x, this.y);
 
       // Check right for player
-      if (world.tiles[tilePos.x + 1][tilePos.y].isSoild()) {
-        if (this.x + this.w / 2 > (tilePos.x + 1) * TileSize) {
+      if (game.world.tiles[tilePos.x + 1][tilePos.y].isSoild()) {
+        if (this.x + this.w / 2 > (tilePos.x + 1) * TILE_SIZE) {
           this.xSpeed = 0;
-          this.x = tilePos.x * TileSize + this.w / 2;
+          this.x = (tilePos.x + 1) * TILE_SIZE - this.w / 2 - 1;
         }
       }
 
       // Check left for player
-      if (world.tiles[tilePos.x - 1][tilePos.y].isSoild()) {
-        if (this.x - this.w / 2 < tilePos.x * TileSize) {
+      if (game.world.tiles[tilePos.x - 1][tilePos.y].isSoild()) {
+        if (this.x - this.w / 2 < tilePos.x * TILE_SIZE) {
           this.xSpeed = 0;
-          this.x = (tilePos.x + 1) * TileSize - this.w / 2;
+          this.x = tilePos.x * TILE_SIZE + this.w / 2;
         }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  private wallRoof(): void {
+    try {
+      let tilePos = GameWorldToTile(this.x, this.y);
+      let left = GameWorldToTile(this.x - this.w / 2, this.y - this.w / 2);
+      let right = GameWorldToTile(this.x + this.w / 2, this.y - this.h / 2);
+
+      if (
+        game.world.tiles[left.x][left.y].isSoild() ||
+        game.world.tiles[right.x][right.y].isSoild()
+      ) {
+        this.ySpeed = 0;
+        this.y = (right.y + 1) * TILE_SIZE + this.h / 2 + 1;
+      }
+
+      if (
+        game.world.tiles[left.x][left.y - 1].isSoild() ||
+        game.world.tiles[right.x][right.y - 1].isSoild()
+      ) {
+        if (this.y - this.h / 2 < right.y * TILE_SIZE + 1) {
+          this.ySpeed = 0;
+          this.y = right.y * TILE_SIZE + this.h / 2 + 1;
+        }
+      } else {
       }
     } catch (error) {
       console.error(error);

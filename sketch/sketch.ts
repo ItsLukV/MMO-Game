@@ -1,5 +1,6 @@
 let playerImg: p5.Image;
-let tilesImg: p5.Image[];
+let tilesImg: p5.Image[] = [];
+let breakingImg: p5.Image[] = [];
 let menu: Menu;
 let game: Game;
 let world: World;
@@ -13,11 +14,23 @@ let gameState: GameStateList = GameStateList.Menu;
 
 function preload() {
   playerImg = loadImage("sketch/assets/Player.png");
-  tilesImg = [];
+
   tilesImg.push(loadImage("sketch/assets/Air.png"));
   tilesImg.push(loadImage("sketch/assets/Grass.png"));
   tilesImg.push(loadImage("sketch/assets/Stone.png"));
   tilesImg.push(loadImage("sketch/assets/Bedrock.png"));
+
+  breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_0.png"));
+  breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_1.png"));
+  breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_2.png"));
+  breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_3.png"));
+  breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_4.png"));
+  breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_5.png"));
+  breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_6.png"));
+  breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_7.png"));
+  breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_8.png"));
+  breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_9.png"));
+  breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_10.png"));
 }
 function setup() {
   createCanvas(960, 640);
@@ -50,7 +63,7 @@ function keyPressed() {
     case GameStateList.Menu:
       break;
     case GameStateList.Playing:
-      game.pressed();
+      game.KeyPressed();
       break;
     case GameStateList.WorldGen:
       break;
@@ -64,7 +77,7 @@ function keyReleased() {
     case GameStateList.Menu:
       break;
     case GameStateList.Playing:
-      game.released();
+      game.KeyReleased();
       break;
     case GameStateList.WorldGen:
       break;
@@ -74,5 +87,12 @@ function keyReleased() {
 }
 
 function mousePressed() {
-  menu.clicked();
+  switch (gameState) {
+    case GameStateList.Menu:
+      menu.clicked();
+      break;
+    case GameStateList.Playing:
+      game.mousePressed();
+      break;
+  }
 }

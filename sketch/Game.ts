@@ -1,27 +1,37 @@
 class Game {
-  player: Player;
-  world: World;
-  private OFFSETX: number;
-  private OFFSETY: number;
+  private player: Player;
+  private world: World;
+  mining: Mining;
+  public OFFSETX: number;
+  public OFFSETY: number;
 
   constructor(world: World) {
     this.world = world;
-    this.player = new Player(256, 450, PLAYER_SIZE, PLAYER_SIZE, playerImg);
+    this.player = new Player(300, 100, PLAYER_SIZE, PLAYER_SIZE, playerImg);
+    this.mining = new Mining();
     this.OFFSETX = width / 2 - this.player.x - this.player.w / 2;
     this.OFFSETY = height / 2 - this.player.y - this.player.h / 2;
   }
 
   public tick() {
+    this.OFFSETX = width / 2 - this.player.x - this.player.w / 2;
+    this.OFFSETY = height / 2 - this.player.y - this.player.h / 2;
     translate(this.OFFSETX, this.OFFSETY);
 
     this.player.tick();
 
     this.world.show();
     this.player.show();
-    this.mouseHover();
+    this.mining.mouseHover();
+    this.player.getInventory().show();
   }
 
-  public pressed() {
+  public mousePressed() {
+    this.mining.mousePressed();
+    this.player.getInventory().itemSelector();
+  }
+
+  public KeyPressed() {
     this.player.pressed(
       keyCode === 65,
       keyCode === 68,
@@ -32,9 +42,13 @@ class Game {
       this.player.x = 256;
       this.player.y = 450;
     }
+    if (keyCode === 69) {
+      this.player.getInventory().showBackpack =
+        !this.player.getInventory().showBackpack;
+    }
   }
 
-  public released() {
+  public KeyReleased() {
     this.player.released(
       keyCode === 65,
       keyCode === 68,
@@ -46,20 +60,7 @@ class Game {
     return this.world;
   }
 
-  mouseHover() {
-    try {
-      if (!TileLookUp(mouseX - this.OFFSETX, mouseY - this.OFFSETY).isSoild())
-        return;
-      push();
-      let mouseTile = GameWorldToTile(
-        mouseX - this.OFFSETX,
-        mouseY - this.OFFSETY
-      );
-      let mousePos = TileToGameWorld(mouseTile.x, mouseTile.y);
-      noFill();
-      strokeWeight(5);
-      rect(mousePos.x, mousePos.y, TILE_SIZE, TILE_SIZE);
-      pop();
-    } catch (error) {}
+  getPlayer(): Player {
+    return this.player;
   }
 }

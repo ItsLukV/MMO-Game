@@ -11,6 +11,7 @@ class Player extends Entity {
   down: boolean;
   left: boolean;
   right: boolean;
+  inventory: Inventory;
 
   constructor(x: number, y: number, w: number, h: number, img: p5.Image) {
     super(x, y, w, h, img);
@@ -26,6 +27,7 @@ class Player extends Entity {
     this.down = false;
     this.left = false;
     this.right = false;
+    this.inventory = new Inventory();
   }
 
   tick() {
@@ -59,8 +61,8 @@ class Player extends Entity {
       );
       // Check under player
       if (
-        game.world.tiles[rightCorner.x][rightCorner.y].isSoild() ||
-        game.world.tiles[leftCorner.x][leftCorner.y].isSoild()
+        game.getWorld().tiles[rightCorner.x][rightCorner.y].isSoild() ||
+        game.getWorld().tiles[leftCorner.x][leftCorner.y].isSoild()
       ) {
         this.gravity = false;
         this.jump = true;
@@ -71,7 +73,7 @@ class Player extends Entity {
         this.jump = false;
       }
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   }
 
@@ -80,7 +82,7 @@ class Player extends Entity {
       let tilePos = GameWorldToTile(this.x, this.y);
 
       // Check right for player
-      if (game.world.tiles[tilePos.x + 1][tilePos.y].isSoild()) {
+      if (game.getWorld().tiles[tilePos.x + 1][tilePos.y].isSoild()) {
         if (this.x + this.w / 2 > (tilePos.x + 1) * TILE_SIZE) {
           this.xSpeed = 0;
           this.x = (tilePos.x + 1) * TILE_SIZE - this.w / 2 - 1;
@@ -88,14 +90,14 @@ class Player extends Entity {
       }
 
       // Check left for player
-      if (game.world.tiles[tilePos.x - 1][tilePos.y].isSoild()) {
+      if (game.getWorld().tiles[tilePos.x - 1][tilePos.y].isSoild()) {
         if (this.x - this.w / 2 < tilePos.x * TILE_SIZE) {
           this.xSpeed = 0;
           this.x = tilePos.x * TILE_SIZE + this.w / 2;
         }
       }
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   }
 
@@ -106,16 +108,16 @@ class Player extends Entity {
       let right = GameWorldToTile(this.x + this.w / 2, this.y - this.h / 2);
 
       if (
-        game.world.tiles[left.x][left.y].isSoild() ||
-        game.world.tiles[right.x][right.y].isSoild()
+        game.getWorld().tiles[left.x][left.y].isSoild() ||
+        game.getWorld().tiles[right.x][right.y].isSoild()
       ) {
         this.ySpeed = 0;
         this.y = (right.y + 1) * TILE_SIZE + this.h / 2 + 1;
       }
 
       if (
-        game.world.tiles[left.x][left.y - 1].isSoild() ||
-        game.world.tiles[right.x][right.y - 1].isSoild()
+        game.getWorld().tiles[left.x][left.y - 1].isSoild() ||
+        game.getWorld().tiles[right.x][right.y - 1].isSoild()
       ) {
         if (this.y - this.h / 2 < right.y * TILE_SIZE + 1) {
           this.ySpeed = 0;
@@ -124,13 +126,13 @@ class Player extends Entity {
       } else {
       }
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   }
 
   private calcSpeed() {
-    this.xSpeed = this.xSpeed * this.airRes;
-    this.ySpeed = this.ySpeed * this.airRes;
+    this.xSpeed *= this.airRes;
+    this.ySpeed *= this.airRes;
     this.x += this.xSpeed;
     this.y += this.ySpeed;
   }
@@ -151,5 +153,9 @@ class Player extends Entity {
 
   private tyndekraft() {
     if (this.gravity) this.ySpeed += this.GRAVITYSPEED;
+  }
+
+  public getInventory(): Inventory {
+    return this.inventory;
   }
 }

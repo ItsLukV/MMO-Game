@@ -3,11 +3,11 @@ class Stone extends Tile {
     super(x, y, w, id);
   }
 
-  show() {
-    image(tilesImg[this.id], this.x, this.y, this.w, this.w);
+  isSoild(): boolean {
+    return true;
   }
 
-  isSoild(): boolean {
+  isBreakable(): boolean {
     return true;
   }
 }

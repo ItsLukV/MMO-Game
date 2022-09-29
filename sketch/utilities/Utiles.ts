@@ -13,16 +13,16 @@ function TileToGameWorld(x: number, y: number): Coords {
 function TileLookUp(x: number, y: number): Tile {
   try {
     let tileCoords = GameWorldToTile(x, y);
-    let tile = game.world.tiles[tileCoords.x][tileCoords.y];
+    let tile = game.getWorld().tiles[tileCoords.x][tileCoords.y];
     return tile;
   } catch (error) {
     switch (error.message) {
-      case "game.world.tiles[tileCoords.x] is undefined":
+      case "game.getWorld().tiles[tileCoords.x] is undefined":
         throw new Error("Mouse is outside of the grid");
-      case "game.world.tiles[tileCoords.y] is undefined":
+      case "game.getWorld().tiles[tileCoords.y] is undefined":
         throw new Error("Mouse is outside of the grid");
       default:
-        console.error(error);
+      // console.error(error);
     }
   }
 }

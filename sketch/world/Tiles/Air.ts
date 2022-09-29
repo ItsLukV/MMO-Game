@@ -3,11 +3,11 @@ class Air extends Tile {
     super(x, y, w, id);
   }
 
-  show() {
-    image(tilesImg[this.id], this.x, this.y, this.w, this.w);
+  isSoild(): boolean {
+    return false;
   }
 
-  static isSoild(): boolean {
+  isBreakable(): boolean {
     return false;
   }
 }

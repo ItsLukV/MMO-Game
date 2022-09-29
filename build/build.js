@@ -1,47 +1,86 @@
 class Game {
     constructor(world) {
         this.world = world;
-        this.player = new Player(256, 450, PLAYER_SIZE, PLAYER_SIZE, playerImg);
+        this.player = new Player(300, 100, PLAYER_SIZE, PLAYER_SIZE, playerImg);
+        this.mining = new Mining();
         this.OFFSETX = width / 2 - this.player.x - this.player.w / 2;
         this.OFFSETY = height / 2 - this.player.y - this.player.h / 2;
     }
     tick() {
+        this.OFFSETX = width / 2 - this.player.x - this.player.w / 2;
+        this.OFFSETY = height / 2 - this.player.y - this.player.h / 2;
         translate(this.OFFSETX, this.OFFSETY);
         this.player.tick();
         this.world.show();
         this.player.show();
-        this.mouseHover();
+        this.mining.mouseHover();
+        this.player.getInventory().show();
     }
-    pressed() {
+    mousePressed() {
+        this.mining.mousePressed();
+        this.player.getInventory().itemSelector();
+    }
+    KeyPressed() {
         this.player.pressed(keyCode === 65, keyCode === 68, keyCode === 87, keyCode === 83);
         if (keyCode === 32) {
             this.player.x = 256;
             this.player.y = 450;
         }
+        if (keyCode === 69) {
+            this.player.getInventory().showBackpack =
+                !this.player.getInventory().showBackpack;
+        }
     }
-    released() {
+    KeyReleased() {
         this.player.released(keyCode === 65, keyCode === 68, keyCode === 87, keyCode === 83);
     }
     getWorld() {
         return this.world;
     }
+    getPlayer() {
+        return this.player;
+    }
+}
+class Mining {
+    constructor() { }
     mouseHover() {
         try {
-            if (!TileLookUp(mouseX - this.OFFSETX, mouseY - this.OFFSETY).isSoild())
+            if (game.getPlayer().getInventory().showBackpack)
+                return;
+            if (!TileLookUp(mouseX - game.OFFSETX, mouseY - game.OFFSETY).isSoild())
                 return;
             push();
-            let mouseTile = GameWorldToTile(mouseX - this.OFFSETX, mouseY - this.OFFSETY);
+            let mouseTile = GameWorldToTile(mouseX - game.OFFSETX, mouseY - game.OFFSETY);
             let mousePos = TileToGameWorld(mouseTile.x, mouseTile.y);
             noFill();
             strokeWeight(5);
             rect(mousePos.x, mousePos.y, TILE_SIZE, TILE_SIZE);
             pop();
         }
-        catch (error) { }
+        catch (error) {
+        }
+    }
+    mousePressed() {
+        try {
+            let tile = TileLookUp(mouseX - game.OFFSETX, mouseY - game.OFFSETY);
+            if (!tile.isSoild())
+                return;
+            if (!tile.isBreakable())
+                return;
+            if (game.getPlayer().getInventory().showBackpack)
+                return;
+            if (game.getPlayer().getInventory().selected.item._id != itemList.Pickaxe)
+                return;
+            if (tile.breakingLevel < breakingImg.length - 1)
+                tile.breakingLevel++;
+        }
+        catch (error) {
+        }
     }
 }
 let playerImg;
-let tilesImg;
+let tilesImg = [];
+let breakingImg = [];
 let menu;
 let game;
 let world;
@@ -55,11 +94,21 @@ var GameStateList;
 let gameState = GameStateList.Menu;
 function preload() {
     playerImg = loadImage("sketch/assets/Player.png");
-    tilesImg = [];
     tilesImg.push(loadImage("sketch/assets/Air.png"));
     tilesImg.push(loadImage("sketch/assets/Grass.png"));
     tilesImg.push(loadImage("sketch/assets/Stone.png"));
     tilesImg.push(loadImage("sketch/assets/Bedrock.png"));
+    breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_0.png"));
+    breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_1.png"));
+    breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_2.png"));
+    breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_3.png"));
+    breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_4.png"));
+    breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_5.png"));
+    breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_6.png"));
+    breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_7.png"));
+    breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_8.png"));
+    breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_9.png"));
+    breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_10.png"));
 }
 function setup() {
     createCanvas(960, 640);
@@ -89,7 +138,7 @@ function keyPressed() {
         case GameStateList.Menu:
             break;
         case GameStateList.Playing:
-            game.pressed();
+            game.KeyPressed();
             break;
         case GameStateList.WorldGen:
             break;
@@ -102,7 +151,7 @@ function keyReleased() {
         case GameStateList.Menu:
             break;
         case GameStateList.Playing:
-            game.released();
+            game.KeyReleased();
             break;
         case GameStateList.WorldGen:
             break;
@@ -111,7 +160,14 @@ function keyReleased() {
     }
 }
 function mousePressed() {
-    menu.clicked();
+    switch (gameState) {
+        case GameStateList.Menu:
+            menu.clicked();
+            break;
+        case GameStateList.Playing:
+            game.mousePressed();
+            break;
+    }
 }
 class Entity {
     constructor(x, y, w, h, img) {
@@ -147,6 +203,7 @@ class Player extends Entity {
         this.down = false;
         this.left = false;
         this.right = false;
+        this.inventory = new Inventory();
     }
     tick() {
         this.tyndekraft();
@@ -173,8 +230,8 @@ class Player extends Entity {
             let tilePos = GameWorldToTile(this.x, this.y);
             let leftCorner = GameWorldToTile(this.x + this.w / 2, this.y + this.h / 2);
             let rightCorner = GameWorldToTile(this.x - this.w / 2, this.y + this.h / 2);
-            if (game.world.tiles[rightCorner.x][rightCorner.y].isSoild() ||
-                game.world.tiles[leftCorner.x][leftCorner.y].isSoild()) {
+            if (game.getWorld().tiles[rightCorner.x][rightCorner.y].isSoild() ||
+                game.getWorld().tiles[leftCorner.x][leftCorner.y].isSoild()) {
                 this.gravity = false;
                 this.jump = true;
                 this.ySpeed = 0;
@@ -186,19 +243,18 @@ class Player extends Entity {
             }
         }
         catch (error) {
-            console.error(error);
         }
     }
     wallCollision() {
         try {
             let tilePos = GameWorldToTile(this.x, this.y);
-            if (game.world.tiles[tilePos.x + 1][tilePos.y].isSoild()) {
+            if (game.getWorld().tiles[tilePos.x + 1][tilePos.y].isSoild()) {
                 if (this.x + this.w / 2 > (tilePos.x + 1) * TILE_SIZE) {
                     this.xSpeed = 0;
                     this.x = (tilePos.x + 1) * TILE_SIZE - this.w / 2 - 1;
                 }
             }
-            if (game.world.tiles[tilePos.x - 1][tilePos.y].isSoild()) {
+            if (game.getWorld().tiles[tilePos.x - 1][tilePos.y].isSoild()) {
                 if (this.x - this.w / 2 < tilePos.x * TILE_SIZE) {
                     this.xSpeed = 0;
                     this.x = tilePos.x * TILE_SIZE + this.w / 2;
@@ -206,7 +262,6 @@ class Player extends Entity {
             }
         }
         catch (error) {
-            console.error(error);
         }
     }
     wallRoof() {
@@ -214,13 +269,13 @@ class Player extends Entity {
             let tilePos = GameWorldToTile(this.x, this.y);
             let left = GameWorldToTile(this.x - this.w / 2, this.y - this.w / 2);
             let right = GameWorldToTile(this.x + this.w / 2, this.y - this.h / 2);
-            if (game.world.tiles[left.x][left.y].isSoild() ||
-                game.world.tiles[right.x][right.y].isSoild()) {
+            if (game.getWorld().tiles[left.x][left.y].isSoild() ||
+                game.getWorld().tiles[right.x][right.y].isSoild()) {
                 this.ySpeed = 0;
                 this.y = (right.y + 1) * TILE_SIZE + this.h / 2 + 1;
             }
-            if (game.world.tiles[left.x][left.y - 1].isSoild() ||
-                game.world.tiles[right.x][right.y - 1].isSoild()) {
+            if (game.getWorld().tiles[left.x][left.y - 1].isSoild() ||
+                game.getWorld().tiles[right.x][right.y - 1].isSoild()) {
                 if (this.y - this.h / 2 < right.y * TILE_SIZE + 1) {
                     this.ySpeed = 0;
                     this.y = right.y * TILE_SIZE + this.h / 2 + 1;
@@ -230,12 +285,11 @@ class Player extends Entity {
             }
         }
         catch (error) {
-            console.error(error);
         }
     }
     calcSpeed() {
-        this.xSpeed = this.xSpeed * this.airRes;
-        this.ySpeed = this.ySpeed * this.airRes;
+        this.xSpeed *= this.airRes;
+        this.ySpeed *= this.airRes;
         this.x += this.xSpeed;
         this.y += this.ySpeed;
     }
@@ -262,6 +316,113 @@ class Player extends Entity {
     tyndekraft() {
         if (this.gravity)
             this.ySpeed += this.GRAVITYSPEED;
+    }
+    getInventory() {
+        return this.inventory;
+    }
+}
+class Inventory {
+    constructor() {
+        this.showBackpack = false;
+        this.backpack = new Array(Inventory.BACKPACKWITDH);
+        for (let i = 0; i < this.backpack.length; i++) {
+            this.backpack[i] = new Array(Inventory.BACKPACKHEIGHT);
+        }
+        for (let i = 0; i < this.backpack.length; i++) {
+            for (let j = 0; j < this.backpack[i].length; j++) {
+                this.backpack[i][j] = new InventorySlot(new Item(i, j, itemList.Air), i, j);
+            }
+        }
+        this.backpack[0][0].item = new Pickaxe(0, 0);
+    }
+    giveItem(itemID, slotX, slotY) {
+        switch (itemID) {
+            case 0:
+                this.backpack[slotX][slotY].item = new Pickaxe(slotX, slotY);
+                break;
+        }
+    }
+    show() {
+        if (this.showBackpack === false)
+            return;
+        push();
+        translate(-game.OFFSETX, -game.OFFSETY);
+        for (let i = 0; i < this.backpack.length; i++) {
+            for (let j = 0; j < this.backpack[i].length; j++) {
+                this.backpack[i][j].showSlot();
+                this.backpack[i][j].item.showItem();
+            }
+        }
+        pop();
+    }
+    itemSelector() {
+        if (this.showBackpack === false)
+            return;
+        let mouseTilePos = this.boxSelector(mouseX, mouseY);
+        let slot = this.backpack[mouseTilePos.x][mouseTilePos.y];
+        if (slot.selected === true) {
+            slot.selected = false;
+            this.selected = null;
+        }
+        else {
+            if (this.selected != null)
+                this.selected.selected = false;
+            slot.selected = true;
+            this.selected = slot;
+        }
+    }
+    boxSelector(x, y) {
+        x = Math.floor((x - offsetX) / Inventory.SLOTSIZE);
+        y = Math.floor((y - offsetY) / Inventory.SLOTSIZE);
+        return { x, y };
+    }
+}
+Inventory.SLOTSIZE = 74;
+Inventory.BACKPACKWITDH = 10;
+Inventory.BACKPACKHEIGHT = 3;
+class InventorySlot {
+    constructor(item, InventoryPosX, InventoryPosY) {
+        this.item = item;
+        this.selected = false;
+        this._InventoryPosX = InventoryPosX;
+        this._InventoryPosY = InventoryPosY;
+    }
+    showSlot() {
+        if (this.selected)
+            fill(0, 255, 0);
+        else
+            fill(220);
+        rect(this._InventoryPosX * Inventory.SLOTSIZE + offsetX, this._InventoryPosY * Inventory.SLOTSIZE + offsetY, Inventory.SLOTSIZE, Inventory.SLOTSIZE);
+    }
+}
+class Item {
+    constructor(InventoryPosX, InventoryPosY, id) {
+        this._width = 64;
+        this._InventoryPosX = InventoryPosX;
+        this._InventoryPosY = InventoryPosY;
+        this._id = id;
+    }
+    showItem() {
+        push();
+        let itemBoxOffset = (Inventory.SLOTSIZE - this._width) / 2;
+        let offsetX = width / 2 - (Inventory.SLOTSIZE * Inventory.BACKPACKWITDH) / 2;
+        let offsetY = height / 2 - (Inventory.SLOTSIZE * Inventory.BACKPACKHEIGHT) / 2;
+        if (this._id === itemList.Pickaxe)
+            fill(240, 3, 14);
+        else
+            fill(255, 255, 255);
+        rect(this._InventoryPosX * Inventory.SLOTSIZE + offsetX + itemBoxOffset, this._InventoryPosY * Inventory.SLOTSIZE + offsetY + itemBoxOffset, this._width, this._width);
+        pop();
+    }
+}
+var itemList;
+(function (itemList) {
+    itemList[itemList["Air"] = 0] = "Air";
+    itemList[itemList["Pickaxe"] = 1] = "Pickaxe";
+})(itemList || (itemList = {}));
+class Pickaxe extends Item {
+    constructor(InventoryPosX, InventoryPosY) {
+        super(InventoryPosX, InventoryPosY, itemList.Pickaxe);
     }
 }
 class Menu {
@@ -345,26 +506,14 @@ class WorldGenButton extends Buttons {
         }
     }
 }
-class Objects {
-    constructor(x, y, w, h, img) {
-        this.x = x;
-        this.y = y;
-        this.w = w;
-        this.h = h;
-        this.img = img;
-    }
-    setOffSet(x, y) {
-        this.x += x;
-        this.y += y;
-    }
-    show() {
-        image(this.img, this.x, this.y, this.w, this.h);
-    }
-}
+const canvasWidth = 960;
+const canvasHeight = 640;
 const TILE_SIZE = 64;
 const PLAYER_SIZE = 32;
 const WORLDHEIGHT = 10;
-const WORLDWIDTH = 10;
+const WORLDWIDTH = 30;
+const offsetX = canvasWidth / 2 - (Inventory.SLOTSIZE * Inventory.BACKPACKWITDH) / 2;
+const offsetY = canvasHeight / 2 - (Inventory.SLOTSIZE * Inventory.BACKPACKHEIGHT) / 2;
 function GameWorldToTile(x, y) {
     x = Math.floor(x / TILE_SIZE);
     y = Math.floor(y / TILE_SIZE);
@@ -378,32 +527,66 @@ function TileToGameWorld(x, y) {
 function TileLookUp(x, y) {
     try {
         let tileCoords = GameWorldToTile(x, y);
-        let tile = game.world.tiles[tileCoords.x][tileCoords.y];
+        let tile = game.getWorld().tiles[tileCoords.x][tileCoords.y];
         return tile;
     }
     catch (error) {
         switch (error.message) {
-            case "game.world.tiles[tileCoords.x] is undefined":
+            case "game.getWorld().tiles[tileCoords.x] is undefined":
                 throw new Error("Mouse is outside of the grid");
-            case "game.world.tiles[tileCoords.y] is undefined":
+            case "game.getWorld().tiles[tileCoords.y] is undefined":
                 throw new Error("Mouse is outside of the grid");
             default:
-                console.error(error);
         }
     }
 }
 class Tile {
     constructor(x, y, w, id) {
-        this.x = x;
-        this.y = y;
-        this.w = w;
-        this.id = id;
+        this._breakingLevel = 0;
+        this._x = x;
+        this._y = y;
+        this._w = w;
+        this._id = id;
     }
     show() {
-        rect(this.x, this.y, this.w, this.w);
+        image(tilesImg[this._id], this._x, this._y, this._w, this._w);
+        image(breakingImg[this._breakingLevel], this._x, this._y, this._w, this._w);
     }
     isSoild() {
         return false;
+    }
+    isBreakable() {
+        return false;
+    }
+    get id() {
+        return this._id;
+    }
+    set id(id) {
+        this._id = id;
+    }
+    get x() {
+        return this._x;
+    }
+    set xx(x) {
+        this._x = x;
+    }
+    get y() {
+        return this._y;
+    }
+    set y(y) {
+        this._y = y;
+    }
+    get w() {
+        return this._w;
+    }
+    set w(w) {
+        this._w = w;
+    }
+    get breakingLevel() {
+        return this._breakingLevel;
+    }
+    set breakingLevel(v) {
+        this._breakingLevel = v;
     }
 }
 class World {
@@ -461,9 +644,9 @@ class World {
 }
 class WorldGenerator {
     constructor(world) {
-        this.world = new Array(WORLDHEIGHT);
-        for (let i = 0; i < WORLDHEIGHT; i++) {
-            this.world[i] = new Array(WORLDWIDTH);
+        this.world = new Array(WORLDWIDTH);
+        for (let i = 0; i < WORLDWIDTH; i++) {
+            this.world[i] = new Array(WORLDHEIGHT);
         }
         for (let i = 0; i < this.world.length; i++) {
             for (let j = 0; j < this.world[i].length; j++) {
@@ -471,9 +654,13 @@ class WorldGenerator {
             }
         }
         for (let i = 0; i < this.world.length; i++) {
-            this.world[i][this.world.length - 1] = 3;
+            for (let j = 0; j < 3; j++) {
+                this.world[i][this.world[i].length - j - 1] = 2;
+            }
         }
-        this.world[this.world.length - 5][this.world.length - 2] = 2;
+        for (let i = 0; i < this.world.length; i++) {
+            this.world[i][this.world[i].length - 1] = 3;
+        }
     }
     getWorld() {
         return this.world;
@@ -483,10 +670,10 @@ class Air extends Tile {
     constructor(x, y, w, id) {
         super(x, y, w, id);
     }
-    show() {
-        image(tilesImg[this.id], this.x, this.y, this.w, this.w);
+    isSoild() {
+        return false;
     }
-    static isSoild() {
+    isBreakable() {
         return false;
     }
 }
@@ -494,21 +681,21 @@ class Bedrock extends Tile {
     constructor(x, y, w, id) {
         super(x, y, w, id);
     }
-    show() {
-        image(tilesImg[this.id], this.x, this.y, this.w, this.w);
-    }
     isSoild() {
         return true;
+    }
+    isBreakable() {
+        return false;
     }
 }
 class Grass extends Tile {
     constructor(x, y, w, id) {
         super(x, y, w, id);
     }
-    show() {
-        image(tilesImg[this.id], this.x, this.y, this.w, this.w);
-    }
     isSoild() {
+        return true;
+    }
+    isBreakable() {
         return true;
     }
 }
@@ -516,10 +703,10 @@ class Stone extends Tile {
     constructor(x, y, w, id) {
         super(x, y, w, id);
     }
-    show() {
-        image(tilesImg[this.id], this.x, this.y, this.w, this.w);
-    }
     isSoild() {
+        return true;
+    }
+    isBreakable() {
         return true;
     }
 }

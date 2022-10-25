@@ -22,10 +22,6 @@ class Game {
     }
     KeyPressed() {
         this.player.pressed(keyCode === 65, keyCode === 68, keyCode === 87, keyCode === 83);
-        if (keyCode === 32) {
-            this.player.x = 256;
-            this.player.y = 450;
-        }
         if (keyCode === 69) {
             this.player.getInventory().showBackpack =
                 !this.player.getInventory().showBackpack;
@@ -69,10 +65,17 @@ class Mining {
                 return;
             if (game.getPlayer().getInventory().showBackpack)
                 return;
-            if (game.getPlayer().getInventory().selected.item._id != itemList.Pickaxe)
+            if (game.getPlayer().getInventory().selected.item.id != itemList.Pickaxe)
                 return;
             if (tile.breakingLevel < breakingImg.length - 1)
                 tile.breakingLevel++;
+            else if (tile.breakingLevel === breakingImg.length - 1) {
+                let worldTile = GameWorldToTile(tile.x, tile.y);
+                game.getPlayer().getInventory().giveItem(tile.item());
+                game
+                    .getWorld()
+                    .changeTile(worldTile.x, worldTile.y, tileID.TempTile, game.getWorld().world[worldTile.x][worldTile.y]);
+            }
         }
         catch (error) {
         }
@@ -81,6 +84,7 @@ class Mining {
 let playerImg;
 let tilesImg = [];
 let breakingImg = [];
+let itemImg = [];
 let menu;
 let game;
 let world;
@@ -98,6 +102,10 @@ function preload() {
     tilesImg.push(loadImage("sketch/assets/Grass.png"));
     tilesImg.push(loadImage("sketch/assets/Stone.png"));
     tilesImg.push(loadImage("sketch/assets/Bedrock.png"));
+    itemImg[0] = null;
+    itemImg[1] = null;
+    itemImg[2] = null;
+    itemImg[itemList.Pickaxe] = loadImage("sketch/assets/item/pickaxe.png");
     breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_0.png"));
     breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_1.png"));
     breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_2.png"));
@@ -335,12 +343,41 @@ class Inventory {
         }
         this.backpack[0][0].item = new Pickaxe(0, 0);
     }
-    giveItem(itemID, slotX, slotY) {
+    giveItem(itemID) {
+        let pos = this.findEmptySlot();
+        if (pos.x === -1 || pos.y === -1) {
+            console.log("No space!");
+            return;
+        }
         switch (itemID) {
-            case 0:
-                this.backpack[slotX][slotY].item = new Pickaxe(slotX, slotY);
+            case 1:
+                this.backpack[pos.x][pos.y].item = new StoneItem(pos.x, pos.y);
+                break;
+            case 3:
+                this.backpack[pos.x][pos.y].item = new Pickaxe(pos.x, pos.y);
+                break;
+            case itemList.Grass:
+                this.backpack[pos.x][pos.y].item = new GrasItem(pos.x, pos.y);
+                break;
+            default:
+                console.log("No itemID:", itemID);
+        }
+    }
+    findEmptySlot() {
+        let x = -1;
+        let y = -1;
+        for (let i = 0; i < this.backpack.length; i++) {
+            for (let j = 0; j < this.backpack[i].length; j++) {
+                if (this.backpack[i][j].item.id === itemList.Air) {
+                    x = i;
+                    y = j;
+                    break;
+                }
+            }
+            if (x != -1)
                 break;
         }
+        return { x, y };
     }
     show() {
         if (this.showBackpack === false)
@@ -396,33 +433,59 @@ class InventorySlot {
     }
 }
 class Item {
-    constructor(InventoryPosX, InventoryPosY, id) {
-        this._width = 64;
-        this._InventoryPosX = InventoryPosX;
-        this._InventoryPosY = InventoryPosY;
-        this._id = id;
+    constructor(InventoryPosX, InventoryPosY, id, img) {
+        this.width = 64;
+        this.InventoryPosX = InventoryPosX;
+        this.InventoryPosY = InventoryPosY;
+        this.id = id;
+        this.img = img;
     }
     showItem() {
         push();
-        let itemBoxOffset = (Inventory.SLOTSIZE - this._width) / 2;
+        let itemBoxOffset = (Inventory.SLOTSIZE - this.width) / 2;
         let offsetX = width / 2 - (Inventory.SLOTSIZE * Inventory.BACKPACKWITDH) / 2;
         let offsetY = height / 2 - (Inventory.SLOTSIZE * Inventory.BACKPACKHEIGHT) / 2;
-        if (this._id === itemList.Pickaxe)
-            fill(240, 3, 14);
-        else
-            fill(255, 255, 255);
-        rect(this._InventoryPosX * Inventory.SLOTSIZE + offsetX + itemBoxOffset, this._InventoryPosY * Inventory.SLOTSIZE + offsetY + itemBoxOffset, this._width, this._width);
+        fill(255, 255, 255);
+        rect(this.InventoryPosX * Inventory.SLOTSIZE + offsetX + itemBoxOffset, this.InventoryPosY * Inventory.SLOTSIZE + offsetY + itemBoxOffset, this.width, this.width);
         pop();
     }
+    item() {
+        return itemList.Air;
+    }
 }
-var itemList;
-(function (itemList) {
-    itemList[itemList["Air"] = 0] = "Air";
-    itemList[itemList["Pickaxe"] = 1] = "Pickaxe";
-})(itemList || (itemList = {}));
+class GrasItem extends Item {
+    constructor(InventoryPosX, InventoryPosY) {
+        super(InventoryPosX, InventoryPosY, itemList.Grass);
+    }
+    showItem() {
+        let itemBoxOffset = (Inventory.SLOTSIZE - this.width) / 2;
+        let offsetX = width / 2 - (Inventory.SLOTSIZE * Inventory.BACKPACKWITDH) / 2;
+        let offsetY = height / 2 - (Inventory.SLOTSIZE * Inventory.BACKPACKHEIGHT) / 2;
+        fill(0, 127, 0);
+        rect(this.InventoryPosX * Inventory.SLOTSIZE + offsetX + itemBoxOffset, this.InventoryPosY * Inventory.SLOTSIZE + offsetY + itemBoxOffset, this.width, this.width);
+    }
+}
 class Pickaxe extends Item {
     constructor(InventoryPosX, InventoryPosY) {
-        super(InventoryPosX, InventoryPosY, itemList.Pickaxe);
+        super(InventoryPosX, InventoryPosY, itemList.Pickaxe, itemImg[itemList.Pickaxe]);
+    }
+    showItem() {
+        let itemBoxOffset = (Inventory.SLOTSIZE - this.width) / 2;
+        let offsetX = width / 2 - (Inventory.SLOTSIZE * Inventory.BACKPACKWITDH) / 2;
+        let offsetY = height / 2 - (Inventory.SLOTSIZE * Inventory.BACKPACKHEIGHT) / 2;
+        image(this.img, this.InventoryPosX * Inventory.SLOTSIZE + offsetX + itemBoxOffset, this.InventoryPosY * Inventory.SLOTSIZE + offsetY + itemBoxOffset, this.width, this.width);
+    }
+}
+class StoneItem extends Item {
+    constructor(InventoryPosX, InventoryPosY) {
+        super(InventoryPosX, InventoryPosY, itemList.Stone);
+    }
+    showItem() {
+        let itemBoxOffset = (Inventory.SLOTSIZE - this.width) / 2;
+        let offsetX = width / 2 - (Inventory.SLOTSIZE * Inventory.BACKPACKWITDH) / 2;
+        let offsetY = height / 2 - (Inventory.SLOTSIZE * Inventory.BACKPACKHEIGHT) / 2;
+        fill(128, 128, 128);
+        rect(this.InventoryPosX * Inventory.SLOTSIZE + offsetX + itemBoxOffset, this.InventoryPosY * Inventory.SLOTSIZE + offsetY + itemBoxOffset, this.width, this.width);
     }
 }
 class Menu {
@@ -514,6 +577,22 @@ const WORLDHEIGHT = 10;
 const WORLDWIDTH = 30;
 const offsetX = canvasWidth / 2 - (Inventory.SLOTSIZE * Inventory.BACKPACKWITDH) / 2;
 const offsetY = canvasHeight / 2 - (Inventory.SLOTSIZE * Inventory.BACKPACKHEIGHT) / 2;
+var tileID;
+(function (tileID) {
+    tileID[tileID["Air"] = 0] = "Air";
+    tileID[tileID["Grass"] = 1] = "Grass";
+    tileID[tileID["Stone"] = 2] = "Stone";
+    tileID[tileID["Bedrock"] = 3] = "Bedrock";
+    tileID[tileID["TempTile"] = 4] = "TempTile";
+})(tileID || (tileID = {}));
+var itemList;
+(function (itemList) {
+    itemList[itemList["Air"] = 0] = "Air";
+    itemList[itemList["Stone"] = 1] = "Stone";
+    itemList[itemList["Grass"] = 2] = "Grass";
+    itemList[itemList["Pickaxe"] = 3] = "Pickaxe";
+    itemList[itemList["TempTile"] = 4] = "TempTile";
+})(itemList || (itemList = {}));
 function GameWorldToTile(x, y) {
     x = Math.floor(x / TILE_SIZE);
     y = Math.floor(y / TILE_SIZE);
@@ -557,6 +636,9 @@ class Tile {
     }
     isBreakable() {
         return false;
+    }
+    item() {
+        return itemList.Air;
     }
     get id() {
         return this._id;
@@ -612,22 +694,7 @@ class World {
         for (let i = 0; i < this.world.length; i++) {
             this.tiles[i] = [];
             for (let j = 0; j < this.world[i].length; j++) {
-                switch (this.world[i][j]) {
-                    case 0:
-                        this.tiles[i][j] = new Air(i * TILE_SIZE, j * TILE_SIZE, TILE_SIZE, this.world[i][j]);
-                        break;
-                    case 1:
-                        this.tiles[i][j] = new Grass(i * TILE_SIZE, j * TILE_SIZE, TILE_SIZE, this.world[i][j]);
-                        break;
-                    case 2:
-                        this.tiles[i][j] = new Stone(i * TILE_SIZE, j * TILE_SIZE, TILE_SIZE, this.world[i][j]);
-                        break;
-                    case 3:
-                        this.tiles[i][j] = new Bedrock(i * TILE_SIZE, j * TILE_SIZE, TILE_SIZE, this.world[i][j]);
-                        break;
-                    default:
-                        throw new Error(`No Tile with the id ${this.world[i][j]}`);
-                }
+                this.tiles[i][j] = this.createTile(this.world[i][j], i, j);
             }
         }
     }
@@ -640,6 +707,33 @@ class World {
     setWorld(world) {
         this.world = world;
         this.load();
+    }
+    changeTile(x, y, tile, tempTile) {
+        this.world[x][y] = tile;
+        this.tiles[x][y] = this.createTile(tile, x, y, tempTile);
+    }
+    createTile(tileId, x, y, tempTile) {
+        let tile;
+        switch (tileId) {
+            case tileID.Air:
+                tile = new AirTile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE);
+                break;
+            case tileID.Grass:
+                tile = new GrassTile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE);
+                break;
+            case tileID.Stone:
+                tile = new StoneTile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE);
+                break;
+            case tileID.Bedrock:
+                tile = new BedrockTile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE);
+                break;
+            case tileID.TempTile:
+                tile = new TempTile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, tempTile);
+                break;
+            default:
+                throw new Error(`No Tile with the id: ${tileId}`);
+        }
+        return tile;
     }
 }
 class WorldGenerator {
@@ -661,14 +755,15 @@ class WorldGenerator {
         for (let i = 0; i < this.world.length; i++) {
             this.world[i][this.world[i].length - 1] = 3;
         }
+        this.world[2][7] = 1;
     }
     getWorld() {
         return this.world;
     }
 }
-class Air extends Tile {
-    constructor(x, y, w, id) {
-        super(x, y, w, id);
+class AirTile extends Tile {
+    constructor(x, y, w) {
+        super(x, y, w, tileID.Air);
     }
     isSoild() {
         return false;
@@ -677,9 +772,9 @@ class Air extends Tile {
         return false;
     }
 }
-class Bedrock extends Tile {
-    constructor(x, y, w, id) {
-        super(x, y, w, id);
+class BedrockTile extends Tile {
+    constructor(x, y, w) {
+        super(x, y, w, tileID.Bedrock);
     }
     isSoild() {
         return true;
@@ -688,26 +783,41 @@ class Bedrock extends Tile {
         return false;
     }
 }
-class Grass extends Tile {
-    constructor(x, y, w, id) {
-        super(x, y, w, id);
+class GrassTile extends Tile {
+    constructor(x, y, w) {
+        super(x, y, w, tileID.Grass);
     }
     isSoild() {
         return true;
     }
     isBreakable() {
         return true;
+    }
+    item() {
+        return itemList.Grass;
     }
 }
-class Stone extends Tile {
-    constructor(x, y, w, id) {
-        super(x, y, w, id);
+class StoneTile extends Tile {
+    constructor(x, y, w) {
+        super(x, y, w, tileID.Stone);
     }
     isSoild() {
         return true;
     }
     isBreakable() {
         return true;
+    }
+    item() {
+        return itemList.Stone;
+    }
+}
+class TempTile extends BedrockTile {
+    constructor(x, y, w, afterId) {
+        super(x, y, w);
+        setTimeout(() => {
+            let worldTile = GameWorldToTile(x, y);
+            game.getWorld().changeTile(worldTile.x, worldTile.y, afterId);
+        }, 2000);
     }
 }
 //# sourceMappingURL=build.js.map

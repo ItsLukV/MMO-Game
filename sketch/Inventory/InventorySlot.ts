@@ -20,4 +20,8 @@ class InventorySlot {
       Inventory.SLOTSIZE
     );
   }
+
+  // checkStack(): itemList {
+  //   return this.item[0].id;
+  // }
 }

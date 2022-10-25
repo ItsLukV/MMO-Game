@@ -27,9 +27,21 @@ class Mining {
       if (!tile.isSoild()) return;
       if (!tile.isBreakable()) return;
       if (game.getPlayer().getInventory().showBackpack) return;
-      if (game.getPlayer().getInventory().selected.item._id != itemList.Pickaxe)
+      if (game.getPlayer().getInventory().selected.item.id != itemList.Pickaxe)
         return;
       if (tile.breakingLevel < breakingImg.length - 1) tile.breakingLevel++;
+      else if (tile.breakingLevel === breakingImg.length - 1) {
+        let worldTile = GameWorldToTile(tile.x, tile.y);
+        game.getPlayer().getInventory().giveItem(tile.item());
+        game
+          .getWorld()
+          .changeTile(
+            worldTile.x,
+            worldTile.y,
+            tileID.TempTile,
+            game.getWorld().world[worldTile.x][worldTile.y]
+          );
+      }
     } catch (error) {
       //   if (error.message != "Mouse is outside of the grid") console.error(error);
     }

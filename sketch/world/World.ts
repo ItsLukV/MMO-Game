@@ -25,42 +25,7 @@ class World {
     for (let i: number = 0; i < this.world.length; i++) {
       this.tiles[i] = [];
       for (let j: number = 0; j < this.world[i].length; j++) {
-        switch (this.world[i][j]) {
-          case 0:
-            this.tiles[i][j] = new Air(
-              i * TILE_SIZE,
-              j * TILE_SIZE,
-              TILE_SIZE,
-              this.world[i][j]
-            );
-            break;
-          case 1:
-            this.tiles[i][j] = new Grass(
-              i * TILE_SIZE,
-              j * TILE_SIZE,
-              TILE_SIZE,
-              this.world[i][j]
-            );
-            break;
-          case 2:
-            this.tiles[i][j] = new Stone(
-              i * TILE_SIZE,
-              j * TILE_SIZE,
-              TILE_SIZE,
-              this.world[i][j]
-            );
-            break;
-          case 3:
-            this.tiles[i][j] = new Bedrock(
-              i * TILE_SIZE,
-              j * TILE_SIZE,
-              TILE_SIZE,
-              this.world[i][j]
-            );
-            break;
-          default:
-            throw new Error(`No Tile with the id ${this.world[i][j]}`);
-        }
+        this.tiles[i][j] = this.createTile(this.world[i][j], i, j);
       }
     }
   }
@@ -75,5 +40,39 @@ class World {
   public setWorld(world: number[][]) {
     this.world = world;
     this.load();
+  }
+
+  public changeTile(x: number, y: number, tile: tileID, tempTile?: tileID) {
+    this.world[x][y] = tile;
+    this.tiles[x][y] = this.createTile(tile, x, y, tempTile);
+  }
+
+  private createTile(
+    tileId: tileID,
+    x: number,
+    y: number,
+    tempTile?: tileID
+  ): Tile {
+    let tile;
+    switch (tileId) {
+      case tileID.Air:
+        tile = new AirTile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE);
+        break;
+      case tileID.Grass:
+        tile = new GrassTile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE);
+        break;
+      case tileID.Stone:
+        tile = new StoneTile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE);
+        break;
+      case tileID.Bedrock:
+        tile = new BedrockTile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE);
+        break;
+      case tileID.TempTile:
+        tile = new TempTile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, tempTile);
+        break;
+      default:
+        throw new Error(`No Tile with the id: ${tileId}`);
+    }
+    return tile;
   }
 }

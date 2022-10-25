@@ -24,6 +24,10 @@ abstract class Tile {
     return false;
   }
 
+  public item() {
+    return itemList.Air;
+  }
+
   // Getters and setters
   public get id(): number {
     return this._id;

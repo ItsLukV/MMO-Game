@@ -38,10 +38,6 @@ class Game {
       keyCode === 87,
       keyCode === 83
     );
-    if (keyCode === 32) {
-      this.player.x = 256;
-      this.player.y = 450;
-    }
     if (keyCode === 69) {
       this.player.getInventory().showBackpack =
         !this.player.getInventory().showBackpack;

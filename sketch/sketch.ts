@@ -1,6 +1,7 @@
 let playerImg: p5.Image;
 let tilesImg: p5.Image[] = [];
 let breakingImg: p5.Image[] = [];
+let itemImg: p5.Image[] = [];
 let menu: Menu;
 let game: Game;
 let world: World;
@@ -19,6 +20,11 @@ function preload() {
   tilesImg.push(loadImage("sketch/assets/Grass.png"));
   tilesImg.push(loadImage("sketch/assets/Stone.png"));
   tilesImg.push(loadImage("sketch/assets/Bedrock.png"));
+
+  itemImg[0] = null;
+  itemImg[1] = null;
+  itemImg[2] = null;
+  itemImg[itemList.Pickaxe] = loadImage("sketch/assets/item/pickaxe.png");
 
   breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_0.png"));
   breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_1.png"));

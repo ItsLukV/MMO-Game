@@ -1,5 +1,3 @@
-/// <reference path="../../utilities/Buttons.ts"/>
-
 class StartButton extends Buttons {
   constructor(
     txt: string,

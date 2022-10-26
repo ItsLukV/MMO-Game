@@ -24,22 +24,23 @@ class Mining {
   public mousePressed() {
     try {
       let tile = TileLookUp(mouseX - game.OFFSETX, mouseY - game.OFFSETY);
+      let inventory = game.getPlayer().getInventory();
       if (!tile.isSoild()) return;
       if (!tile.isBreakable()) return;
-      if (game.getPlayer().getInventory().showBackpack) return;
-      if (game.getPlayer().getInventory().selected.item.id != itemList.Pickaxe)
-        return;
+      if (inventory.showBackpack) return;
+      if (inventory.getSelectedItemId() != itemList.Pickaxe) return;
       if (tile.breakingLevel < breakingImg.length - 1) tile.breakingLevel++;
       else if (tile.breakingLevel === breakingImg.length - 1) {
         let worldTile = GameWorldToTile(tile.x, tile.y);
-        game.getPlayer().getInventory().giveItem(tile.item());
+        inventory.giveItem(tile.item());
         game
           .getWorld()
           .changeTile(
             worldTile.x,
             worldTile.y,
             tileID.TempTile,
-            game.getWorld().world[worldTile.x][worldTile.y]
+            tile.id,
+            tile.getRegenerationSpeed()
           );
       }
     } catch (error) {

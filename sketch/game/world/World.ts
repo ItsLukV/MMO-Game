@@ -42,16 +42,23 @@ class World {
     this.load();
   }
 
-  public changeTile(x: number, y: number, tile: tileID, tempTile?: tileID) {
+  public changeTile(
+    x: number,
+    y: number,
+    tile: tileID,
+    tempTile?: tileID,
+    regenerationSpeed?: number
+  ) {
     this.world[x][y] = tile;
-    this.tiles[x][y] = this.createTile(tile, x, y, tempTile);
+    this.tiles[x][y] = this.createTile(tile, x, y, tempTile, regenerationSpeed);
   }
 
   private createTile(
     tileId: tileID,
     x: number,
     y: number,
-    tempTile?: tileID
+    tempTile?: tileID,
+    regenerationSpeed?: number
   ): Tile {
     let tile;
     switch (tileId) {
@@ -68,7 +75,13 @@ class World {
         tile = new BedrockTile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE);
         break;
       case tileID.TempTile:
-        tile = new TempTile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, tempTile);
+        tile = new TempTile(
+          x * TILE_SIZE,
+          y * TILE_SIZE,
+          TILE_SIZE,
+          tempTile,
+          regenerationSpeed
+        );
         break;
       default:
         throw new Error(`No Tile with the id: ${tileId}`);

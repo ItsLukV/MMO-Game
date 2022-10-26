@@ -21,9 +21,9 @@ function preload() {
   tilesImg.push(loadImage("sketch/assets/Stone.png"));
   tilesImg.push(loadImage("sketch/assets/Bedrock.png"));
 
-  itemImg[0] = null;
-  itemImg[1] = null;
-  itemImg[2] = null;
+  itemImg[itemList.Air] = null;
+  itemImg[itemList.Stone] = null;
+  itemImg[itemList.Grass] = null;
   itemImg[itemList.Pickaxe] = loadImage("sketch/assets/item/pickaxe.png");
 
   breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_0.png"));

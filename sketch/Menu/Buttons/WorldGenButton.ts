@@ -1,5 +1,3 @@
-/// <reference path="../../utilities/Buttons.ts"/>
-
 class WorldGenButton extends Buttons {
   constructor(
     txt: string,

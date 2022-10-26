@@ -4,6 +4,7 @@ abstract class Tile {
   private _w: number;
   private _id: number;
   private _breakingLevel: number = 0;
+  protected regenerationSpeed: number = 1000;
   constructor(x: number, y: number, w: number, id: number) {
     this._x = x;
     this._y = y;
@@ -29,6 +30,11 @@ abstract class Tile {
   }
 
   // Getters and setters
+
+  public getRegenerationSpeed() {
+    return this.regenerationSpeed;
+  }
+
   public get id(): number {
     return this._id;
   }

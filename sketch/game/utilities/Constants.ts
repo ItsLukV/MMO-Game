@@ -25,5 +25,4 @@ enum itemList {
   Stone = 1,
   Grass = 2,
   Pickaxe = 3,
-  TempTile = 4,
 }

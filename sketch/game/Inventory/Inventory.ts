@@ -1,8 +1,8 @@
 class Inventory {
-  backpack: InventorySlot[][];
+  public backpack: InventorySlot[][];
 
   public showBackpack: boolean = false;
-  selected: InventorySlot;
+  public selected: InventorySlot;
 
   static SLOTSIZE: number = 74;
   static BACKPACKWITDH: number = 10;
@@ -23,28 +23,53 @@ class Inventory {
     }
 
     //TODO dev pickaxe
-    this.backpack[0][0].item = new Pickaxe(0, 0);
+    this.backpack[0][0].addItem(new Pickaxe(0, 0));
   }
 
   public giveItem(itemID: itemList) {
-    let pos = this.findEmptySlot();
+    let pos = this.findSlot(itemID);
     if (pos.x === -1 || pos.y === -1) {
       console.log("No space!");
       return;
     }
     switch (itemID) {
-      case 1:
-        this.backpack[pos.x][pos.y].item = new StoneItem(pos.x, pos.y);
+      case itemList.Stone:
+        this.backpack[pos.x][pos.y].addItem(new StoneItem(pos.x, pos.y));
         break;
-      case 3:
-        this.backpack[pos.x][pos.y].item = new Pickaxe(pos.x, pos.y);
+      case itemList.Pickaxe:
+        this.backpack[pos.x][pos.y].addItem(new Pickaxe(pos.x, pos.y));
         break;
       case itemList.Grass:
-        this.backpack[pos.x][pos.y].item = new GrasItem(pos.x, pos.y);
+        this.backpack[pos.x][pos.y].addItem(new GrasItem(pos.x, pos.y));
         break;
       default:
         console.log("No itemID:", itemID);
     }
+  }
+
+  private findSlot(itemID: itemList): Coords {
+    let stackslot = this.stackItem(itemID);
+    if (stackslot.x != -1 || stackslot.y != -1) {
+      return stackslot;
+    }
+    return this.findEmptySlot();
+  }
+  stackItem(itemID: itemList): Coords {
+    let x = -1;
+    let y = -1;
+    let backpack = game.getPlayer().inventory.backpack;
+    for (let i = 0; i < backpack.length; i++) {
+      for (let j = 0; j < backpack[i].length; j++) {
+        if (backpack[i][j].items[0].id === itemID) {
+          x = backpack[i][j].InventoryPosX;
+          y = backpack[i][j].InventoryPosY;
+        }
+      }
+    }
+    return {
+      x: x,
+      y: y,
+    };
   }
 
   private findEmptySlot(): Coords {
@@ -52,7 +77,7 @@ class Inventory {
     let y = -1;
     for (let i = 0; i < this.backpack.length; i++) {
       for (let j = 0; j < this.backpack[i].length; j++) {
-        if (this.backpack[i][j].item.id === itemList.Air) {
+        if (this.backpack[i][j].items[0].id === itemList.Air) {
           x = i;
           y = j;
           break;
@@ -71,7 +96,8 @@ class Inventory {
     for (let i = 0; i < this.backpack.length; i++) {
       for (let j = 0; j < this.backpack[i].length; j++) {
         this.backpack[i][j].showSlot();
-        this.backpack[i][j].item.showItem();
+        this.backpack[i][j].showItems();
+        this.backpack[i][j].showStackSize();
       }
     }
     pop();
@@ -91,6 +117,10 @@ class Inventory {
       slot.selected = true;
       this.selected = slot;
     }
+  }
+
+  public getSelectedItemId() {
+    return this.selected.items[0].id;
   }
 
   private boxSelector(x: number, y: number): Coords {

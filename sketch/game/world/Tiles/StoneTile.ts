@@ -1,6 +1,7 @@
-class GrassTile extends Tile {
+class StoneTile extends Tile {
   constructor(x: number, y: number, w: number) {
-    super(x, y, w, tileID.Grass);
+    super(x, y, w, tileID.Stone);
+    this.regenerationSpeed = 1000 * 60 * 2;
   }
 
   isSoild(): boolean {
@@ -10,7 +11,8 @@ class GrassTile extends Tile {
   isBreakable(): boolean {
     return true;
   }
+
   item(): itemList {
-    return itemList.Grass;
+    return itemList.Stone;
   }
 }

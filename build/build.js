@@ -37,50 +37,6 @@ class Game {
         return this.player;
     }
 }
-class Mining {
-    constructor() { }
-    mouseHover() {
-        try {
-            if (game.getPlayer().getInventory().showBackpack)
-                return;
-            if (!TileLookUp(mouseX - game.OFFSETX, mouseY - game.OFFSETY).isSoild())
-                return;
-            push();
-            let mouseTile = GameWorldToTile(mouseX - game.OFFSETX, mouseY - game.OFFSETY);
-            let mousePos = TileToGameWorld(mouseTile.x, mouseTile.y);
-            noFill();
-            strokeWeight(5);
-            rect(mousePos.x, mousePos.y, TILE_SIZE, TILE_SIZE);
-            pop();
-        }
-        catch (error) {
-        }
-    }
-    mousePressed() {
-        try {
-            let tile = TileLookUp(mouseX - game.OFFSETX, mouseY - game.OFFSETY);
-            if (!tile.isSoild())
-                return;
-            if (!tile.isBreakable())
-                return;
-            if (game.getPlayer().getInventory().showBackpack)
-                return;
-            if (game.getPlayer().getInventory().selected.item.id != itemList.Pickaxe)
-                return;
-            if (tile.breakingLevel < breakingImg.length - 1)
-                tile.breakingLevel++;
-            else if (tile.breakingLevel === breakingImg.length - 1) {
-                let worldTile = GameWorldToTile(tile.x, tile.y);
-                game.getPlayer().getInventory().giveItem(tile.item());
-                game
-                    .getWorld()
-                    .changeTile(worldTile.x, worldTile.y, tileID.TempTile, game.getWorld().world[worldTile.x][worldTile.y]);
-            }
-        }
-        catch (error) {
-        }
-    }
-}
 let playerImg;
 let tilesImg = [];
 let breakingImg = [];
@@ -102,9 +58,9 @@ function preload() {
     tilesImg.push(loadImage("sketch/assets/Grass.png"));
     tilesImg.push(loadImage("sketch/assets/Stone.png"));
     tilesImg.push(loadImage("sketch/assets/Bedrock.png"));
-    itemImg[0] = null;
-    itemImg[1] = null;
-    itemImg[2] = null;
+    itemImg[itemList.Air] = null;
+    itemImg[itemList.Stone] = null;
+    itemImg[itemList.Grass] = null;
     itemImg[itemList.Pickaxe] = loadImage("sketch/assets/item/pickaxe.png");
     breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_0.png"));
     breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_1.png"));
@@ -175,6 +131,132 @@ function mousePressed() {
         case GameStateList.Playing:
             game.mousePressed();
             break;
+    }
+}
+class Buttons {
+    constructor(txt, x, y, w, h, txtSize) {
+        this.txt = txt;
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+        txtSize ? this.txtSize : (this.txtSize = 30);
+        this.backgroundColor = 255;
+    }
+    show() {
+        push();
+        fill(this.backgroundColor);
+        stroke(0);
+        textSize(this.txtSize);
+        rect(this.x, this.y, this.w, this.h);
+        textAlign(CENTER);
+        let textheight = textAscent() + textDescent();
+        fill(0);
+        text(this.txt, this.x, this.y + this.h / 2 - textheight / 2, this.w, this.h);
+        pop();
+    }
+    hover() {
+        if (this.mouseCollions()) {
+            this.backgroundColor = 220;
+        }
+        else {
+            this.backgroundColor = 255;
+        }
+    }
+    clicked() { }
+    mouseCollions() {
+        if (mouseX > this.x && mouseX < this.x + this.w) {
+            if (mouseY > this.y && mouseY < this.y + this.h) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return false;
+        }
+    }
+}
+class Menu {
+    constructor() {
+        this.startBtn = new StartButton("Start", width / 2 - 100, height / 3 - 50, 200, 100);
+        this.worldGen = new WorldGenButton("World Gen", width / 2 - 100, (height / 3) * 2 - 50, 200, 100);
+    }
+    show() {
+        this.startBtn.show();
+        this.startBtn.hover();
+        this.worldGen.show();
+        this.worldGen.hover();
+    }
+    clicked() {
+        this.startBtn.clicked();
+        this.worldGen.clicked();
+    }
+}
+class StartButton extends Buttons {
+    constructor(txt, x, y, w, h, txtSize) {
+        super(txt, x, y, w, h, txtSize);
+    }
+    clicked() {
+        if (this.mouseCollions()) {
+            gameState = GameStateList.Playing;
+        }
+    }
+}
+class WorldGenButton extends Buttons {
+    constructor(txt, x, y, w, h, txtSize) {
+        super(txt, x, y, w, h, txtSize);
+    }
+    clicked() {
+        if (this.mouseCollions()) {
+            gameState = GameStateList.WorldGen;
+        }
+    }
+}
+class Mining {
+    constructor() { }
+    mouseHover() {
+        try {
+            if (game.getPlayer().getInventory().showBackpack)
+                return;
+            if (!TileLookUp(mouseX - game.OFFSETX, mouseY - game.OFFSETY).isSoild())
+                return;
+            push();
+            let mouseTile = GameWorldToTile(mouseX - game.OFFSETX, mouseY - game.OFFSETY);
+            let mousePos = TileToGameWorld(mouseTile.x, mouseTile.y);
+            noFill();
+            strokeWeight(5);
+            rect(mousePos.x, mousePos.y, TILE_SIZE, TILE_SIZE);
+            pop();
+        }
+        catch (error) {
+        }
+    }
+    mousePressed() {
+        try {
+            let tile = TileLookUp(mouseX - game.OFFSETX, mouseY - game.OFFSETY);
+            let inventory = game.getPlayer().getInventory();
+            if (!tile.isSoild())
+                return;
+            if (!tile.isBreakable())
+                return;
+            if (inventory.showBackpack)
+                return;
+            if (inventory.getSelectedItemId() != itemList.Pickaxe)
+                return;
+            if (tile.breakingLevel < breakingImg.length - 1)
+                tile.breakingLevel++;
+            else if (tile.breakingLevel === breakingImg.length - 1) {
+                let worldTile = GameWorldToTile(tile.x, tile.y);
+                inventory.giveItem(tile.item());
+                game
+                    .getWorld()
+                    .changeTile(worldTile.x, worldTile.y, tileID.TempTile, tile.id, tile.getRegenerationSpeed());
+            }
+        }
+        catch (error) {
+        }
     }
 }
 class Entity {
@@ -341,34 +423,58 @@ class Inventory {
                 this.backpack[i][j] = new InventorySlot(new Item(i, j, itemList.Air), i, j);
             }
         }
-        this.backpack[0][0].item = new Pickaxe(0, 0);
+        this.backpack[0][0].addItem(new Pickaxe(0, 0));
     }
     giveItem(itemID) {
-        let pos = this.findEmptySlot();
+        let pos = this.findSlot(itemID);
         if (pos.x === -1 || pos.y === -1) {
             console.log("No space!");
             return;
         }
         switch (itemID) {
-            case 1:
-                this.backpack[pos.x][pos.y].item = new StoneItem(pos.x, pos.y);
+            case itemList.Stone:
+                this.backpack[pos.x][pos.y].addItem(new StoneItem(pos.x, pos.y));
                 break;
-            case 3:
-                this.backpack[pos.x][pos.y].item = new Pickaxe(pos.x, pos.y);
+            case itemList.Pickaxe:
+                this.backpack[pos.x][pos.y].addItem(new Pickaxe(pos.x, pos.y));
                 break;
             case itemList.Grass:
-                this.backpack[pos.x][pos.y].item = new GrasItem(pos.x, pos.y);
+                this.backpack[pos.x][pos.y].addItem(new GrasItem(pos.x, pos.y));
                 break;
             default:
                 console.log("No itemID:", itemID);
         }
+    }
+    findSlot(itemID) {
+        let stackslot = this.stackItem(itemID);
+        if (stackslot.x != -1 || stackslot.y != -1) {
+            return stackslot;
+        }
+        return this.findEmptySlot();
+    }
+    stackItem(itemID) {
+        let x = -1;
+        let y = -1;
+        let backpack = game.getPlayer().inventory.backpack;
+        for (let i = 0; i < backpack.length; i++) {
+            for (let j = 0; j < backpack[i].length; j++) {
+                if (backpack[i][j].items[0].id === itemID) {
+                    x = backpack[i][j].InventoryPosX;
+                    y = backpack[i][j].InventoryPosY;
+                }
+            }
+        }
+        return {
+            x: x,
+            y: y,
+        };
     }
     findEmptySlot() {
         let x = -1;
         let y = -1;
         for (let i = 0; i < this.backpack.length; i++) {
             for (let j = 0; j < this.backpack[i].length; j++) {
-                if (this.backpack[i][j].item.id === itemList.Air) {
+                if (this.backpack[i][j].items[0].id === itemList.Air) {
                     x = i;
                     y = j;
                     break;
@@ -387,7 +493,8 @@ class Inventory {
         for (let i = 0; i < this.backpack.length; i++) {
             for (let j = 0; j < this.backpack[i].length; j++) {
                 this.backpack[i][j].showSlot();
-                this.backpack[i][j].item.showItem();
+                this.backpack[i][j].showItems();
+                this.backpack[i][j].showStackSize();
             }
         }
         pop();
@@ -408,6 +515,9 @@ class Inventory {
             this.selected = slot;
         }
     }
+    getSelectedItemId() {
+        return this.selected.items[0].id;
+    }
     boxSelector(x, y) {
         x = Math.floor((x - offsetX) / Inventory.SLOTSIZE);
         y = Math.floor((y - offsetY) / Inventory.SLOTSIZE);
@@ -419,17 +529,40 @@ Inventory.BACKPACKWITDH = 10;
 Inventory.BACKPACKHEIGHT = 3;
 class InventorySlot {
     constructor(item, InventoryPosX, InventoryPosY) {
-        this.item = item;
+        this.items = [];
+        this.items.push(item);
         this.selected = false;
-        this._InventoryPosX = InventoryPosX;
-        this._InventoryPosY = InventoryPosY;
+        this.InventoryPosX = InventoryPosX;
+        this.InventoryPosY = InventoryPosY;
     }
     showSlot() {
         if (this.selected)
             fill(0, 255, 0);
         else
             fill(220);
-        rect(this._InventoryPosX * Inventory.SLOTSIZE + offsetX, this._InventoryPosY * Inventory.SLOTSIZE + offsetY, Inventory.SLOTSIZE, Inventory.SLOTSIZE);
+        rect(this.InventoryPosX * Inventory.SLOTSIZE + offsetX, this.InventoryPosY * Inventory.SLOTSIZE + offsetY, Inventory.SLOTSIZE, Inventory.SLOTSIZE);
+    }
+    showStackSize() {
+        if (this.items.length <= 1)
+            return;
+        fill(0);
+        text(this.items.length, this.InventoryPosX * Inventory.SLOTSIZE +
+            offsetX +
+            Inventory.SLOTSIZE / 2, this.InventoryPosY * Inventory.SLOTSIZE + offsetY + Inventory.SLOTSIZE / 2);
+    }
+    showItems() {
+        for (let item of this.items) {
+            item.showItem();
+        }
+    }
+    addItem(item) {
+        if (this.items[0].id === itemList.Air) {
+            this.items = [];
+            this.items.push(item);
+        }
+        else {
+            this.items.push(item);
+        }
     }
 }
 class Item {
@@ -488,87 +621,6 @@ class StoneItem extends Item {
         rect(this.InventoryPosX * Inventory.SLOTSIZE + offsetX + itemBoxOffset, this.InventoryPosY * Inventory.SLOTSIZE + offsetY + itemBoxOffset, this.width, this.width);
     }
 }
-class Menu {
-    constructor() {
-        this.startBtn = new StartButton("Start", width / 2 - 100, height / 3 - 50, 200, 100);
-        this.worldGen = new WorldGenButton("World Gen", width / 2 - 100, (height / 3) * 2 - 50, 200, 100);
-    }
-    show() {
-        this.startBtn.show();
-        this.startBtn.hover();
-        this.worldGen.show();
-        this.worldGen.hover();
-    }
-    clicked() {
-        this.startBtn.clicked();
-        this.worldGen.clicked();
-    }
-}
-class Buttons {
-    constructor(txt, x, y, w, h, txtSize) {
-        this.txt = txt;
-        this.x = x;
-        this.y = y;
-        this.w = w;
-        this.h = h;
-        txtSize ? this.txtSize : (this.txtSize = 30);
-        this.backgroundColor = 255;
-    }
-    show() {
-        push();
-        fill(this.backgroundColor);
-        stroke(0);
-        textSize(this.txtSize);
-        rect(this.x, this.y, this.w, this.h);
-        textAlign(CENTER);
-        let textheight = textAscent() + textDescent();
-        fill(0);
-        text(this.txt, this.x, this.y + this.h / 2 - textheight / 2, this.w, this.h);
-        pop();
-    }
-    hover() {
-        if (this.mouseCollions()) {
-            this.backgroundColor = 220;
-        }
-        else {
-            this.backgroundColor = 255;
-        }
-    }
-    clicked() { }
-    mouseCollions() {
-        if (mouseX > this.x && mouseX < this.x + this.w) {
-            if (mouseY > this.y && mouseY < this.y + this.h) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-        else {
-            return false;
-        }
-    }
-}
-class StartButton extends Buttons {
-    constructor(txt, x, y, w, h, txtSize) {
-        super(txt, x, y, w, h, txtSize);
-    }
-    clicked() {
-        if (this.mouseCollions()) {
-            gameState = GameStateList.Playing;
-        }
-    }
-}
-class WorldGenButton extends Buttons {
-    constructor(txt, x, y, w, h, txtSize) {
-        super(txt, x, y, w, h, txtSize);
-    }
-    clicked() {
-        if (this.mouseCollions()) {
-            gameState = GameStateList.WorldGen;
-        }
-    }
-}
 const canvasWidth = 960;
 const canvasHeight = 640;
 const TILE_SIZE = 64;
@@ -591,7 +643,6 @@ var itemList;
     itemList[itemList["Stone"] = 1] = "Stone";
     itemList[itemList["Grass"] = 2] = "Grass";
     itemList[itemList["Pickaxe"] = 3] = "Pickaxe";
-    itemList[itemList["TempTile"] = 4] = "TempTile";
 })(itemList || (itemList = {}));
 function GameWorldToTile(x, y) {
     x = Math.floor(x / TILE_SIZE);
@@ -622,6 +673,7 @@ function TileLookUp(x, y) {
 class Tile {
     constructor(x, y, w, id) {
         this._breakingLevel = 0;
+        this.regenerationSpeed = 1000;
         this._x = x;
         this._y = y;
         this._w = w;
@@ -639,6 +691,9 @@ class Tile {
     }
     item() {
         return itemList.Air;
+    }
+    getRegenerationSpeed() {
+        return this.regenerationSpeed;
     }
     get id() {
         return this._id;
@@ -708,11 +763,11 @@ class World {
         this.world = world;
         this.load();
     }
-    changeTile(x, y, tile, tempTile) {
+    changeTile(x, y, tile, tempTile, regenerationSpeed) {
         this.world[x][y] = tile;
-        this.tiles[x][y] = this.createTile(tile, x, y, tempTile);
+        this.tiles[x][y] = this.createTile(tile, x, y, tempTile, regenerationSpeed);
     }
-    createTile(tileId, x, y, tempTile) {
+    createTile(tileId, x, y, tempTile, regenerationSpeed) {
         let tile;
         switch (tileId) {
             case tileID.Air:
@@ -728,7 +783,7 @@ class World {
                 tile = new BedrockTile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE);
                 break;
             case tileID.TempTile:
-                tile = new TempTile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, tempTile);
+                tile = new TempTile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, tempTile, regenerationSpeed);
                 break;
             default:
                 throw new Error(`No Tile with the id: ${tileId}`);
@@ -786,6 +841,7 @@ class BedrockTile extends Tile {
 class GrassTile extends Tile {
     constructor(x, y, w) {
         super(x, y, w, tileID.Grass);
+        this.regenerationSpeed = 1000 * 60;
     }
     isSoild() {
         return true;
@@ -800,6 +856,7 @@ class GrassTile extends Tile {
 class StoneTile extends Tile {
     constructor(x, y, w) {
         super(x, y, w, tileID.Stone);
+        this.regenerationSpeed = 1000 * 60 * 2;
     }
     isSoild() {
         return true;
@@ -812,12 +869,12 @@ class StoneTile extends Tile {
     }
 }
 class TempTile extends BedrockTile {
-    constructor(x, y, w, afterId) {
+    constructor(x, y, w, afterId, regenerationSpeed) {
         super(x, y, w);
         setTimeout(() => {
             let worldTile = GameWorldToTile(x, y);
             game.getWorld().changeTile(worldTile.x, worldTile.y, afterId);
-        }, 2000);
+        }, regenerationSpeed);
     }
 }
 //# sourceMappingURL=build.js.map

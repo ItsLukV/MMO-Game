@@ -1,16 +1,11 @@
 class Game {
     constructor(world) {
-        this.loading = true;
         this.world = world;
         this.player = new Player(300, 100, PLAYER_SIZE, PLAYER_SIZE, playerImg);
         this.mining = new Mining();
         this.showMenu = menuList.game;
     }
     tick() {
-        if (this.loading) {
-            rect(100, 100, 100, 100);
-            return;
-        }
         this.OFFSETX = width / 2 - this.player.x - this.player.w / 2;
         this.OFFSETY = height / 2 - this.player.y - this.player.h / 2;
         translate(this.OFFSETX, this.OFFSETY);
@@ -171,7 +166,7 @@ class StartMenuButtons {
         this.y = y;
         this.w = w;
         this.h = h;
-        txtSize === undefined ? (this.txtSize = 30) : (this.txtSize = txtSize);
+        txtSize ? this.txtSize : (this.txtSize = 30);
         this.backgroundColor = 255;
     }
     show() {
@@ -194,7 +189,7 @@ class StartMenuButtons {
             this.backgroundColor = 255;
         }
     }
-    clicked(e) { }
+    clicked() { }
     mouseCollions() {
         if (mouseX > this.x && mouseX < this.x + this.w) {
             if (mouseY > this.y && mouseY < this.y + this.h) {
@@ -245,25 +240,6 @@ class WorldGenButton extends StartMenuButtons {
         }
     }
 }
-class Cheating {
-    constructor() { }
-    giveItem(itemId, amount) {
-        if (amount === undefined)
-            amount = 1;
-        console.log(amount);
-        for (let i = 0; i < amount; i++)
-            game.getPlayer().getInventory().giveItem(itemId);
-    }
-    setPlayer(x, y) {
-        game.getPlayer().x = x;
-        game.getPlayer().y = y;
-    }
-    changeTile(x, y, tileId) {
-        game.getWorld().changeTile(x, y, tileId);
-    }
-}
-console.log("Cheating: Enabled");
-let cheats = new Cheating();
 class Mining {
     constructor() { }
     mouseHover() {
@@ -466,58 +442,23 @@ class Player extends Entity {
 class Menu {
     constructor() { }
 }
-class Crafting extends Menu {
-    constructor() {
-        super();
-        this.widthOffset = 100;
-        this.heightOffset = 100;
-        this.buttons = [];
-        this.BUTTONSIZE = 100;
-        getRecipes();
+[
+    {
+        "name": "test",
+        "items_requrment": ["stone"]
+    },
+    {
+        "name": "recipe_pickaxe",
+        "items_requrment": ["sticks", "sticks", "stone", "stone", "stone"]
     }
-    afterGettingDataconstructor() {
-        for (let i = 0; i < this.craftingRecipes.length; i++)
-            this.buttons.push(new CraftingButton(this.craftingRecipes[i].item, this.BUTTONSIZE * i + this.BUTTONSIZE, this.BUTTONSIZE, this.BUTTONSIZE, this.BUTTONSIZE, translateItemNameToId(this.craftingRecipes[i].item), translateItemNameToItemReipe(this.craftingRecipes[i].name), 10));
-    }
-    show() {
-        push();
-        translate(-game.OFFSETX, -game.OFFSETY);
-        rect(0 + this.widthOffset, 0 + this.heightOffset, width - this.widthOffset * 2, height - this.heightOffset * 2);
-        this.buttons.forEach((item) => {
-            item.show();
-        });
-        pop();
+]
+class CraftingButton extends StartMenuButtons {
+    constructor(txt, x, y, w, h, txtSize) {
+        super(txt, x, y, w, h);
     }
     clicked() {
-        this.buttons.forEach((item) => {
-            item.clicked(this);
-        });
-    }
-    hasEnoughMaterials(itemId) {
-        let inventory = game.getPlayer().getInventory();
-        switch (itemId) {
-            case craftingList.test:
-                let item = this.craftingRecipes[itemId].items_requrment;
-                for (let i = 0; i < item.length; i++)
-                    if (inventory.hasItem(itemList.Grass)) {
-                        let pos = inventory.findItem(itemList.Grass, item[i].amount);
-                        if (pos.x === -1 || pos.y === -1)
-                            return false;
-                    }
-        }
-        return false;
-    }
-}
-class CraftingButton extends StartMenuButtons {
-    constructor(txt, x, y, w, h, itemId, recipeId, txtSize) {
-        super(txt, x, y, w, h, txtSize);
-        this.itemId = itemId;
-        this.recipeId = recipeId;
-    }
-    clicked(crafting) {
         if (this.mouseCollions()) {
-            if (crafting.hasEnoughMaterials(this.recipeId))
-                game.getPlayer().getInventory().giveItem(this.itemId);
+            console.log("test");
         }
     }
 }
@@ -567,8 +508,7 @@ class Inventory {
         let backpack = game.getPlayer().inventory.backpack;
         for (let i = 0; i < backpack.length; i++) {
             for (let j = 0; j < backpack[i].length; j++) {
-                if (backpack[i][j].items[0].id === itemID &&
-                    backpack[i][j].items[0].stackSize() > backpack[i][j].items.length) {
+                if (backpack[i][j].items[0].id === itemID) {
                     x = backpack[i][j].InventoryPosX;
                     y = backpack[i][j].InventoryPosY;
                 }
@@ -606,30 +546,6 @@ class Inventory {
             }
         }
         pop();
-    }
-    findItem(itemId, amount) {
-        let x = -1;
-        let y = -1;
-        for (let i = 0; i < this.backpack.length; i++) {
-            for (let j = 0; j < this.backpack[i].length; j++) {
-                if (this.backpack[i][j].items[0].id === itemId) {
-                    if (this.backpack[i][j].items.length === amount) {
-                        return { x: i, y: j };
-                    }
-                }
-            }
-        }
-        return { x, y };
-    }
-    hasItem(itemId) {
-        for (let i = 0; i < this.backpack.length; i++) {
-            for (let j = 0; j < this.backpack[i].length; j++) {
-                if (this.backpack[i][j].items[0].id === itemId) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
     itemSelector() {
         let mouseTilePos = this.boxSelector(mouseX, mouseY);
@@ -712,9 +628,6 @@ class Item {
         rect(this.InventoryPosX * Inventory.SLOTSIZE + offsetX + itemBoxOffset, this.InventoryPosY * Inventory.SLOTSIZE + offsetY + itemBoxOffset, this.width, this.width);
         pop();
     }
-    stackSize() {
-        return 1;
-    }
     item() {
         return itemList.Air;
     }
@@ -730,9 +643,6 @@ class GrasItem extends Item {
         fill(0, 127, 0);
         rect(this.InventoryPosX * Inventory.SLOTSIZE + offsetX + itemBoxOffset, this.InventoryPosY * Inventory.SLOTSIZE + offsetY + itemBoxOffset, this.width, this.width);
     }
-    stackSize() {
-        return 99;
-    }
 }
 class Pickaxe extends Item {
     constructor(InventoryPosX, InventoryPosY) {
@@ -743,9 +653,6 @@ class Pickaxe extends Item {
         let offsetX = width / 2 - (Inventory.SLOTSIZE * Inventory.BACKPACKWITDH) / 2;
         let offsetY = height / 2 - (Inventory.SLOTSIZE * Inventory.BACKPACKHEIGHT) / 2;
         image(this.img, this.InventoryPosX * Inventory.SLOTSIZE + offsetX + itemBoxOffset, this.InventoryPosY * Inventory.SLOTSIZE + offsetY + itemBoxOffset, this.width, this.width);
-    }
-    stackSize() {
-        return 1;
     }
 }
 class StoneItem extends Item {
@@ -758,9 +665,6 @@ class StoneItem extends Item {
         let offsetY = height / 2 - (Inventory.SLOTSIZE * Inventory.BACKPACKHEIGHT) / 2;
         fill(128, 128, 128);
         rect(this.InventoryPosX * Inventory.SLOTSIZE + offsetX + itemBoxOffset, this.InventoryPosY * Inventory.SLOTSIZE + offsetY + itemBoxOffset, this.width, this.width);
-    }
-    stackSize() {
-        return 99;
     }
 }
 const canvasWidth = 960;
@@ -792,18 +696,6 @@ var menuList;
     menuList[menuList["inventory"] = 1] = "inventory";
     menuList[menuList["crafting"] = 2] = "crafting";
 })(menuList || (menuList = {}));
-var itemName;
-(function (itemName) {
-    itemName["Air"] = "Air";
-    itemName["Stone"] = "Stone";
-    itemName["Grass"] = "Grass";
-    itemName["Pickaxe"] = "Pickaxe";
-})(itemName || (itemName = {}));
-var craftingList;
-(function (craftingList) {
-    craftingList[craftingList["test"] = 0] = "test";
-    craftingList[craftingList["recipe_pickaxe"] = 1] = "recipe_pickaxe";
-})(craftingList || (craftingList = {}));
 function GameWorldToTile(x, y) {
     x = Math.floor(x / TILE_SIZE);
     y = Math.floor(y / TILE_SIZE);
@@ -829,50 +721,6 @@ function TileLookUp(x, y) {
             default:
         }
     }
-}
-function translateItemNameToId(itemName) {
-    switch (itemName.toUpperCase()) {
-        case "STONE":
-            return itemList.Stone;
-        case "AIR":
-            return itemList.Air;
-        case "GRASS":
-            return itemList.Grass;
-        case "PICKAXE":
-            return itemList.Pickaxe;
-    }
-    throw "No Item Name" + itemName;
-}
-function translateItemNameToItemReipe(itemName) {
-    switch (itemName.toUpperCase()) {
-        case "TEST":
-            return craftingList.test;
-        case "RECIPE_PICKAXE":
-            craftingList.recipe_pickaxe;
-    }
-    return;
-}
-async function getRecipes() {
-    fetch("sketch/data/crafting/items.json")
-        .then((response) => response.json())
-        .then((json) => {
-        game.getPlayer().getCrafting().craftingRecipes = json;
-        game.getPlayer().getCrafting().afterGettingDataconstructor();
-        game.loading = false;
-    });
-}
-function itemListToName(itemId) {
-    switch (itemId) {
-        case itemList.Air:
-            return itemName.Air;
-        case itemList.Stone:
-            return itemName.Stone;
-        case itemList.Grass:
-            return itemName.Grass;
-        case itemList.Pickaxe:
-            return itemName.Pickaxe;
-    }
-    throw "no name/list";
 }
 class Tile {
     constructor(x, y, w, id) {
@@ -1081,4 +929,4 @@ class TempTile extends BedrockTile {
         }, regenerationSpeed);
     }
 }
-//# sourceMappingURL=build.js.map
+//# sourceMappingURL=build.js --module.map

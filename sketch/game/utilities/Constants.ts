@@ -26,3 +26,21 @@ enum itemList {
   Grass = 2,
   Pickaxe = 3,
 }
+
+enum menuList {
+  game = 0,
+  inventory = 1,
+  crafting = 2,
+}
+
+enum itemName {
+  Air = "Air",
+  Stone = "Stone",
+  Grass = "Grass",
+  Pickaxe = "Pickaxe",
+}
+
+enum craftingList {
+  test = 0,
+  recipe_pickaxe = 1,
+}

@@ -1,4 +1,4 @@
-class WorldGenButton extends Buttons {
+class WorldGenButton extends StartMenuButtons {
   constructor(
     txt: string,
     x: number,

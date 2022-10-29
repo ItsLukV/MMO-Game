@@ -1,0 +1,15 @@
+[
+  {
+    "name": "test",
+    "items_requrment": [{ "name": "grass", "amount": 1 }],
+    "item": "stone"
+  },
+  {
+    "name": "recipe_pickaxe",
+    "items_requrment": [
+      { "name": "stone", "amount": 3 },
+      { "name": "sticks", "amount": 2 }
+    ],
+    "item": "pickaxe"
+  }
+]

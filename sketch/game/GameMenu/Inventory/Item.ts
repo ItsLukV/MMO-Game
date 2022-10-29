@@ -35,6 +35,10 @@ class Item {
     pop();
   }
 
+  stackSize(): number {
+    return 1;
+  }
+
   item(): itemList {
     return itemList.Air;
   }

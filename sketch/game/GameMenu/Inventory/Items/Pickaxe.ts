@@ -22,4 +22,7 @@ class Pickaxe extends Item {
       this.width
     );
   }
+  stackSize(): number {
+    return 1;
+  }
 }

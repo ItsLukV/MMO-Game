@@ -27,7 +27,54 @@ function TileLookUp(x: number, y: number): Tile {
   }
 }
 
+function translateItemNameToId(itemName: string): itemList {
+  switch (itemName.toUpperCase()) {
+    case "STONE":
+      return itemList.Stone;
+    case "AIR":
+      return itemList.Air;
+    case "GRASS":
+      return itemList.Grass;
+    case "PICKAXE":
+      return itemList.Pickaxe;
+  }
+  throw "No Item Name" + itemName;
+}
+
+function translateItemNameToItemReipe(itemName: string): craftingList {
+  switch (itemName.toUpperCase()) {
+    case "TEST":
+      return craftingList.test;
+    case "RECIPE_PICKAXE":
+      craftingList.recipe_pickaxe;
+  }
+  return;
+}
 interface Coords {
   x: number;
   y: number;
+}
+
+async function getRecipes() {
+  fetch("sketch/data/crafting/items.json")
+    .then((response) => response.json())
+    .then((json) => {
+      game.getPlayer().getCrafting().craftingRecipes = json;
+      game.getPlayer().getCrafting().afterGettingDataconstructor();
+      game.loading = false;
+    });
+}
+
+function itemListToName(itemId: itemList): itemName {
+  switch (itemId) {
+    case itemList.Air:
+      return itemName.Air;
+    case itemList.Stone:
+      return itemName.Stone;
+    case itemList.Grass:
+      return itemName.Grass;
+    case itemList.Pickaxe:
+      return itemName.Pickaxe;
+  }
+  throw "no name/list";
 }

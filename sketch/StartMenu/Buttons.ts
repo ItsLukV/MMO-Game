@@ -1,4 +1,4 @@
-class Buttons {
+class StartMenuButtons {
   x: number;
   y: number;
   w: number;
@@ -20,7 +20,8 @@ class Buttons {
     this.y = y;
     this.w = w;
     this.h = h;
-    txtSize ? this.txtSize : (this.txtSize = 30);
+    txtSize === undefined ? (this.txtSize = 30) : (this.txtSize = txtSize);
+
     this.backgroundColor = 255;
   }
 
@@ -52,7 +53,7 @@ class Buttons {
     }
   }
 
-  clicked() {}
+  clicked(e: any) {}
 
   protected mouseCollions(): boolean {
     if (mouseX > this.x && mouseX < this.x + this.w) {

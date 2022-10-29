@@ -17,4 +17,7 @@ class GrasItem extends Item {
       this.width
     );
   }
+  stackSize(): number {
+    return 99;
+  }
 }

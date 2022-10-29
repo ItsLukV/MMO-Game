@@ -59,7 +59,10 @@ class Inventory {
     let backpack = game.getPlayer().inventory.backpack;
     for (let i = 0; i < backpack.length; i++) {
       for (let j = 0; j < backpack[i].length; j++) {
-        if (backpack[i][j].items[0].id === itemID) {
+        if (
+          backpack[i][j].items[0].id === itemID &&
+          backpack[i][j].items[0].stackSize() > backpack[i][j].items.length
+        ) {
           x = backpack[i][j].InventoryPosX;
           y = backpack[i][j].InventoryPosY;
         }
@@ -84,11 +87,11 @@ class Inventory {
       }
       if (x != -1) break;
     }
+
     return { x, y };
   }
 
-  show() {
-    if (this.showBackpack === false) return;
+  public show() {
     push();
     translate(-game.OFFSETX, -game.OFFSETY);
 
@@ -102,9 +105,34 @@ class Inventory {
     pop();
   }
 
-  public itemSelector() {
-    if (this.showBackpack === false) return;
+  findItem(itemId: itemList, amount: number): Coords {
+    let x = -1;
+    let y = -1;
+    for (let i = 0; i < this.backpack.length; i++) {
+      for (let j = 0; j < this.backpack[i].length; j++) {
+        if (this.backpack[i][j].items[0].id === itemId) {
+          if (this.backpack[i][j].items.length === amount) {
+            return { x: i, y: j };
+          }
+        }
+      }
+    }
+    // throw "no items";
+    return { x, y };
+  }
 
+  hasItem(itemId: itemList): boolean {
+    for (let i = 0; i < this.backpack.length; i++) {
+      for (let j = 0; j < this.backpack[i].length; j++) {
+        if (this.backpack[i][j].items[0].id === itemId) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  public itemSelector() {
     let mouseTilePos = this.boxSelector(mouseX, mouseY);
 
     let slot = this.backpack[mouseTilePos.x][mouseTilePos.y];

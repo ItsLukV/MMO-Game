@@ -1,4 +1,4 @@
-class StartButton extends Buttons {
+class StartButton extends StartMenuButtons {
   constructor(
     txt: string,
     x: number,

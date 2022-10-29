@@ -3,8 +3,6 @@ class Game {
         this.world = world;
         this.player = new Player(300, 100, PLAYER_SIZE, PLAYER_SIZE, playerImg);
         this.mining = new Mining();
-        this.OFFSETX = width / 2 - this.player.x - this.player.w / 2;
-        this.OFFSETY = height / 2 - this.player.y - this.player.h / 2;
     }
     tick() {
         this.OFFSETX = width / 2 - this.player.x - this.player.w / 2;
@@ -15,6 +13,7 @@ class Game {
         this.player.show();
         this.mining.mouseHover();
         this.player.getInventory().show();
+        this.player.getCrafting().show();
     }
     mousePressed() {
         this.mining.mousePressed();
@@ -22,9 +21,14 @@ class Game {
     }
     KeyPressed() {
         this.player.pressed(keyCode === 65, keyCode === 68, keyCode === 87, keyCode === 83);
-        if (keyCode === 69) {
-            this.player.getInventory().showBackpack =
-                !this.player.getInventory().showBackpack;
+        switch (keyCode) {
+            case 69:
+                this.player.getInventory().showBackpack =
+                    !this.player.getInventory().showBackpack;
+                break;
+            case 67:
+                this.player.getCrafting().showCraft =
+                    !this.player.getCrafting().showCraft;
         }
     }
     KeyReleased() {
@@ -80,7 +84,7 @@ function setup() {
     worldGenerator = new WorldGenerator(world);
     world.setWorld(worldGenerator.getWorld());
     game = new Game(world);
-    menu = new Menu();
+    menu = new StartMenu();
 }
 function draw() {
     background(220);
@@ -178,7 +182,7 @@ class Buttons {
         }
     }
 }
-class Menu {
+class StartMenu {
     constructor() {
         this.startBtn = new StartButton("Start", width / 2 - 100, height / 3 - 50, 200, 100);
         this.worldGen = new WorldGenButton("World Gen", width / 2 - 100, (height / 3) * 2 - 50, 200, 100);
@@ -294,6 +298,7 @@ class Player extends Entity {
         this.left = false;
         this.right = false;
         this.inventory = new Inventory();
+        this.crafting = new Crafting();
     }
     tick() {
         this.tyndekraft();
@@ -371,8 +376,6 @@ class Player extends Entity {
                     this.y = right.y * TILE_SIZE + this.h / 2 + 1;
                 }
             }
-            else {
-            }
         }
         catch (error) {
         }
@@ -410,6 +413,23 @@ class Player extends Entity {
     getInventory() {
         return this.inventory;
     }
+    getCrafting() {
+        return this.crafting;
+    }
+}
+class Menu {
+    constructor() { }
+}
+class Crafting extends Menu {
+    constructor() {
+        super();
+        this.widthOffset = 100;
+        this.heightOffset = 100;
+    }
+    show() {
+        if (this.showCraft)
+            rect(0 + this.widthOffset, 0 + this.heightOffset, width - this.widthOffset * 2, height - this.heightOffset * 2);
+    }
 }
 class Inventory {
     constructor() {
@@ -428,8 +448,7 @@ class Inventory {
     giveItem(itemID) {
         let pos = this.findSlot(itemID);
         if (pos.x === -1 || pos.y === -1) {
-            console.log("No space!");
-            return;
+            throw "No space";
         }
         switch (itemID) {
             case itemList.Stone:

@@ -29,8 +29,7 @@ class Inventory {
   public giveItem(itemID: itemList) {
     let pos = this.findSlot(itemID);
     if (pos.x === -1 || pos.y === -1) {
-      console.log("No space!");
-      return;
+      throw "No space";
     }
     switch (itemID) {
       case itemList.Stone:

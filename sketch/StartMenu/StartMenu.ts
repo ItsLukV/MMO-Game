@@ -1,4 +1,4 @@
-class Menu {
+class StartMenu {
   private startBtn: StartButton;
   private worldGen: WorldGenButton;
   constructor() {

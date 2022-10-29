@@ -9,8 +9,6 @@ class Game {
     this.world = world;
     this.player = new Player(300, 100, PLAYER_SIZE, PLAYER_SIZE, playerImg);
     this.mining = new Mining();
-    this.OFFSETX = width / 2 - this.player.x - this.player.w / 2;
-    this.OFFSETY = height / 2 - this.player.y - this.player.h / 2;
   }
 
   public tick() {
@@ -24,6 +22,7 @@ class Game {
     this.player.show();
     this.mining.mouseHover();
     this.player.getInventory().show();
+    this.player.getCrafting().show();
   }
 
   public mousePressed() {
@@ -38,9 +37,14 @@ class Game {
       keyCode === 87,
       keyCode === 83
     );
-    if (keyCode === 69) {
-      this.player.getInventory().showBackpack =
-        !this.player.getInventory().showBackpack;
+    switch (keyCode) {
+      case 69:
+        this.player.getInventory().showBackpack =
+          !this.player.getInventory().showBackpack;
+        break;
+      case 67:
+        this.player.getCrafting().showCraft =
+          !this.player.getCrafting().showCraft;
     }
   }
 

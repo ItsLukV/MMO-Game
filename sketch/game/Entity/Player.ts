@@ -12,6 +12,7 @@ class Player extends Entity {
   left: boolean;
   right: boolean;
   inventory: Inventory;
+  crafting: Crafting;
 
   constructor(x: number, y: number, w: number, h: number, img: p5.Image) {
     super(x, y, w, h, img);
@@ -28,6 +29,7 @@ class Player extends Entity {
     this.left = false;
     this.right = false;
     this.inventory = new Inventory();
+    this.crafting = new Crafting();
   }
 
   tick() {
@@ -123,7 +125,6 @@ class Player extends Entity {
           this.ySpeed = 0;
           this.y = right.y * TILE_SIZE + this.h / 2 + 1;
         }
-      } else {
       }
     } catch (error) {
       // console.error(error);
@@ -157,5 +158,9 @@ class Player extends Entity {
 
   public getInventory(): Inventory {
     return this.inventory;
+  }
+
+  public getCrafting() {
+    return this.crafting;
   }
 }

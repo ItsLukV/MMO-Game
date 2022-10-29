@@ -2,7 +2,7 @@ let playerImg: p5.Image;
 let tilesImg: p5.Image[] = [];
 let breakingImg: p5.Image[] = [];
 let itemImg: p5.Image[] = [];
-let menu: Menu;
+let menu: StartMenu;
 let game: Game;
 let world: World;
 let worldGenerator: WorldGenerator;
@@ -46,7 +46,7 @@ function setup() {
   world.setWorld(worldGenerator.getWorld());
 
   game = new Game(world);
-  menu = new Menu();
+  menu = new StartMenu();
 }
 
 function draw() {

@@ -12,6 +12,8 @@ abstract class Tile {
     this._id = id;
   }
 
+  abstract xp(): XP;
+
   public show() {
     image(tilesImg[this._id], this._x, this._y, this._w, this._w);
     image(breakingImg[this._breakingLevel], this._x, this._y, this._w, this._w);

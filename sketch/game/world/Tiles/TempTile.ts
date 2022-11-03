@@ -12,4 +12,7 @@ class TempTile extends BedrockTile {
       game.getWorld().changeTile(worldTile.x, worldTile.y, afterId);
     }, regenerationSpeed);
   }
+  xp(): XP {
+    return { xp: 0, type: SkillsList.none };
+  }
 }

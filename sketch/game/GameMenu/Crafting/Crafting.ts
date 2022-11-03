@@ -20,7 +20,7 @@ class Crafting extends Menu {
           this.BUTTONSIZE,
           translateItemNameToId(this.craftingRecipes[i].item),
           translateItemNameToItemReipe(this.craftingRecipes[i].name),
-          10
+          20
         )
       );
   }

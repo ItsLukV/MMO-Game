@@ -28,13 +28,18 @@ class Game {
 
     this.world.show();
     this.player.show();
+
     this.mining.mouseHover();
+
     switch (this.showMenu) {
       case menuList.crafting:
         this.player.getCrafting().show();
         break;
       case menuList.inventory:
         this.player.getInventory().show();
+        break;
+      case menuList.skill:
+        this.player.skillManager.show();
         break;
     }
   }
@@ -70,6 +75,13 @@ class Game {
           this.showMenu = menuList.game;
         } else {
           this.showMenu = menuList.crafting;
+        }
+        break;
+      case 75:
+        if (this.showMenu === menuList.skill) {
+          this.showMenu = menuList.game;
+        } else {
+          this.showMenu = menuList.skill;
         }
         break;
     }

@@ -10,4 +10,7 @@ class AirTile extends Tile {
   isBreakable(): boolean {
     return false;
   }
+  xp(): XP {
+    return { xp: 0, type: SkillsList.none };
+  }
 }

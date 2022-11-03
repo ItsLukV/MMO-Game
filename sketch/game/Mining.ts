@@ -42,6 +42,7 @@ class Mining {
             tile.id,
             tile.getRegenerationSpeed()
           );
+        game.getPlayer().skillManager.addXp(tile.xp());
       }
     } catch (error) {
       //   if (error.message != "Mouse is outside of the grid") console.error(error);

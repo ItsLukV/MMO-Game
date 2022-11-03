@@ -31,6 +31,7 @@ enum menuList {
   game = 0,
   inventory = 1,
   crafting = 2,
+  skill = 3,
 }
 
 enum itemName {
@@ -43,4 +44,9 @@ enum itemName {
 enum craftingList {
   test = 0,
   recipe_pickaxe = 1,
+}
+
+enum SkillsList {
+  none = 0,
+  mining = 1,
 }

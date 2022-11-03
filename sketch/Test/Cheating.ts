@@ -15,6 +15,10 @@ class Cheating {
   changeTile(x: number, y: number, tileId: tileID) {
     game.getWorld().changeTile(x, y, tileId);
   }
+
+  giveXp(xp: number, type: SkillsList) {
+    game.getPlayer().getSkillManager().addXp({ xp: xp, type: type });
+  }
 }
 
 console.log("Cheating: Enabled");

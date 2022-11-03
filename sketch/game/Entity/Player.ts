@@ -13,6 +13,7 @@ class Player extends Entity {
   right: boolean;
   inventory: Inventory;
   crafting: Crafting;
+  skillManager: SkillManager;
 
   constructor(x: number, y: number, w: number, h: number, img: p5.Image) {
     super(x, y, w, h, img);
@@ -30,6 +31,7 @@ class Player extends Entity {
     this.right = false;
     this.inventory = new Inventory();
     this.crafting = new Crafting();
+    this.skillManager = new SkillManager();
   }
 
   tick() {
@@ -38,7 +40,6 @@ class Player extends Entity {
     this.groundCollision();
     this.wallRoof();
     this.move();
-    let tilePos = GameWorldToTile(this.x, this.y);
 
     this.calcSpeed();
   }
@@ -162,5 +163,9 @@ class Player extends Entity {
 
   public getCrafting() {
     return this.crafting;
+  }
+
+  public getSkillManager() {
+    return this.skillManager;
   }
 }

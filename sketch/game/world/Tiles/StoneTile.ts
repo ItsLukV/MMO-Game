@@ -4,6 +4,10 @@ class StoneTile extends Tile {
     this.regenerationSpeed = 1000 * 60 * 2;
   }
 
+  xp(): XP {
+    return { xp: 1, type: SkillsList.mining };
+  }
+
   isSoild(): boolean {
     return true;
   }

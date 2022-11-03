@@ -25,6 +25,9 @@ class Game {
             case menuList.inventory:
                 this.player.getInventory().show();
                 break;
+            case menuList.skill:
+                this.player.skillManager.show();
+                break;
         }
     }
     mousePressed() {
@@ -54,6 +57,14 @@ class Game {
                 }
                 else {
                     this.showMenu = menuList.crafting;
+                }
+                break;
+            case 75:
+                if (this.showMenu === menuList.skill) {
+                    this.showMenu = menuList.game;
+                }
+                else {
+                    this.showMenu = menuList.skill;
                 }
                 break;
         }
@@ -261,6 +272,9 @@ class Cheating {
     changeTile(x, y, tileId) {
         game.getWorld().changeTile(x, y, tileId);
     }
+    giveXp(xp, type) {
+        game.getPlayer().getSkillManager().addXp({ xp: xp, type: type });
+    }
 }
 console.log("Cheating: Enabled");
 let cheats = new Cheating();
@@ -303,6 +317,7 @@ class Mining {
                 game
                     .getWorld()
                     .changeTile(worldTile.x, worldTile.y, tileID.TempTile, tile.id, tile.getRegenerationSpeed());
+                game.getPlayer().skillManager.addXp(tile.xp());
             }
         }
         catch (error) {
@@ -345,6 +360,7 @@ class Player extends Entity {
         this.right = false;
         this.inventory = new Inventory();
         this.crafting = new Crafting();
+        this.skillManager = new SkillManager();
     }
     tick() {
         this.tyndekraft();
@@ -352,7 +368,6 @@ class Player extends Entity {
         this.groundCollision();
         this.wallRoof();
         this.move();
-        let tilePos = GameWorldToTile(this.x, this.y);
         this.calcSpeed();
     }
     move() {
@@ -461,6 +476,9 @@ class Player extends Entity {
     }
     getCrafting() {
         return this.crafting;
+    }
+    getSkillManager() {
+        return this.skillManager;
     }
 }
 class Menu {
@@ -763,6 +781,94 @@ class StoneItem extends Item {
         return 99;
     }
 }
+class Skill {
+    constructor() {
+        this.xp = 0;
+        this.lvl = 0;
+    }
+    getMaxLvl() {
+        return this.maxLvl;
+    }
+    addXp(xp) {
+        this.xp += xp;
+        if (this.lvl < this.maxLvl)
+            this.setLvl(this.XpToLvl(this.xp));
+        console.info(this.constructor.name + ":", this.xp + " xp", "|", this.lvl + " lvl");
+    }
+    setLvl(lvl) {
+        this.lvl = lvl;
+    }
+    XpToLvl(xp) {
+        return Math.floor(Math.pow(xp, 0.5));
+    }
+    getXp() {
+        return this.xp;
+    }
+    getLvl() {
+        return this.lvl;
+    }
+}
+class SkillManager {
+    constructor() {
+        this.bars = [];
+        this.mining = new SkillMining();
+        this.bars.push(new Bar(20, 20, 200, 20, this.mining.getBarColor()));
+    }
+    addXp(xpOrb) {
+        switch (xpOrb.type) {
+            case SkillsList.mining:
+                this.mining.addXp(xpOrb.xp);
+                break;
+        }
+    }
+    show() {
+        push();
+        translate(-game.OFFSETX, -game.OFFSETY);
+        this.bars.forEach((item) => {
+            item.show(this.mining.getLvl());
+        });
+        pop();
+    }
+}
+class SkillMenu extends Menu {
+    clicked() {
+        throw new Error("Method not implemented.");
+    }
+    show() {
+        throw new Error("Method not implemented.");
+    }
+}
+class SkillMining extends Skill {
+    constructor() {
+        super();
+        this.maxLvl = 100;
+        this.barColor = { r: 100, g: 100, b: 100 };
+    }
+    getBarColor() {
+        return this.barColor;
+    }
+}
+class Bar {
+    constructor(x, y, maxWidth, h, color, margin) {
+        margin === undefined ? (this.margin = 5) : (this.margin = margin);
+        this.x = x;
+        this.y = y;
+        this.w = 0;
+        this.maxWidth = maxWidth;
+        this.h = h;
+        color === undefined
+            ? (this.color = { r: 0, g: 0, b: 0 })
+            : (this.color = color);
+    }
+    show(value) {
+        push();
+        fill(this.color.r - 20, this.color.g - 20, this.color.b - 20, 90);
+        rect(this.x - this.margin, this.y - this.margin, this.maxWidth + this.margin * 2, this.h + this.margin * 2);
+        fill(this.color.r, this.color.g, this.color.b);
+        rect(this.x, this.y, map(value, 0, 100, 0, this.maxWidth), this.h);
+        pop();
+    }
+}
 const canvasWidth = 960;
 const canvasHeight = 640;
 const TILE_SIZE = 64;
@@ -791,6 +897,7 @@ var menuList;
     menuList[menuList["game"] = 0] = "game";
     menuList[menuList["inventory"] = 1] = "inventory";
     menuList[menuList["crafting"] = 2] = "crafting";
+    menuList[menuList["skill"] = 3] = "skill";
 })(menuList || (menuList = {}));
 var itemName;
 (function (itemName) {
@@ -804,6 +911,11 @@ var craftingList;
     craftingList[craftingList["test"] = 0] = "test";
     craftingList[craftingList["recipe_pickaxe"] = 1] = "recipe_pickaxe";
 })(craftingList || (craftingList = {}));
+var SkillsList;
+(function (SkillsList) {
+    SkillsList[SkillsList["none"] = 0] = "none";
+    SkillsList[SkillsList["mining"] = 1] = "mining";
+})(SkillsList || (SkillsList = {}));
 function GameWorldToTile(x, y) {
     x = Math.floor(x / TILE_SIZE);
     y = Math.floor(y / TILE_SIZE);
@@ -1030,6 +1142,9 @@ class AirTile extends Tile {
     isBreakable() {
         return false;
     }
+    xp() {
+        return { xp: 0, type: SkillsList.none };
+    }
 }
 class BedrockTile extends Tile {
     constructor(x, y, w) {
@@ -1041,11 +1156,17 @@ class BedrockTile extends Tile {
     isBreakable() {
         return false;
     }
+    xp() {
+        return { xp: 0, type: SkillsList.none };
+    }
 }
 class GrassTile extends Tile {
     constructor(x, y, w) {
         super(x, y, w, tileID.Grass);
         this.regenerationSpeed = 1000 * 60;
+    }
+    xp() {
+        return { xp: 1, type: SkillsList.mining };
     }
     isSoild() {
         return true;
@@ -1061,6 +1182,9 @@ class StoneTile extends Tile {
     constructor(x, y, w) {
         super(x, y, w, tileID.Stone);
         this.regenerationSpeed = 1000 * 60 * 2;
+    }
+    xp() {
+        return { xp: 1, type: SkillsList.mining };
     }
     isSoild() {
         return true;
@@ -1079,6 +1203,9 @@ class TempTile extends BedrockTile {
             let worldTile = GameWorldToTile(x, y);
             game.getWorld().changeTile(worldTile.x, worldTile.y, afterId);
         }, regenerationSpeed);
+    }
+    xp() {
+        return { xp: 0, type: SkillsList.none };
     }
 }
 //# sourceMappingURL=build.js.map

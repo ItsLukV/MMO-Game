@@ -78,3 +78,14 @@ function itemListToName(itemId: itemList): itemName {
   }
   throw "no name/list";
 }
+
+interface XP {
+  xp: number;
+  type: SkillsList;
+}
+
+interface Color {
+  r: number;
+  g: number;
+  b: number;
+}

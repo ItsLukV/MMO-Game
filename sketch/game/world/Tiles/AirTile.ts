@@ -3,7 +3,7 @@ class AirTile extends Tile {
     super(x, y, w, tileID.Air);
   }
 
-  isSoild(): boolean {
+  isSolid(): boolean {
     return false;
   }
 

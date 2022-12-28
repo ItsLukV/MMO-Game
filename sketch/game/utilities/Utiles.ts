@@ -55,16 +55,6 @@ interface Coords {
   y: number;
 }
 
-async function getRecipes() {
-  fetch("sketch/data/crafting/items.json")
-    .then((response) => response.json())
-    .then((json) => {
-      game.getPlayer().getCrafting().craftingRecipes = json;
-      game.getPlayer().getCrafting().afterGettingDataconstructor();
-      game.loading = false;
-    });
-}
-
 function itemListToName(itemId: itemList): itemName {
   switch (itemId) {
     case itemList.Air:
@@ -75,8 +65,9 @@ function itemListToName(itemId: itemList): itemName {
       return itemName.Grass;
     case itemList.Pickaxe:
       return itemName.Pickaxe;
+    default:
+      throw "no name/list";
   }
-  throw "no name/list";
 }
 
 interface XP {

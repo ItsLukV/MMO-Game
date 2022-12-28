@@ -13,24 +13,13 @@ class InventorySlot {
   showSlot() {
     if (this.selected) fill(0, 255, 0);
     else fill(220);
-    rect(
-      this.InventoryPosX * Inventory.SLOTSIZE + offsetX,
-      this.InventoryPosY * Inventory.SLOTSIZE + offsetY,
-      Inventory.SLOTSIZE,
-      Inventory.SLOTSIZE
-    );
+    rect(this.InventoryPosX * Inventory.SLOTSIZE + offsetX, this.InventoryPosY * Inventory.SLOTSIZE + offsetY, Inventory.SLOTSIZE, Inventory.SLOTSIZE);
   }
 
   showStackSize() {
     if (this.items.length <= 1) return;
     fill(0);
-    text(
-      this.items.length,
-      this.InventoryPosX * Inventory.SLOTSIZE +
-        offsetX +
-        Inventory.SLOTSIZE / 2,
-      this.InventoryPosY * Inventory.SLOTSIZE + offsetY + Inventory.SLOTSIZE / 2
-    );
+    text(this.items.length, this.InventoryPosX * Inventory.SLOTSIZE + offsetX + Inventory.SLOTSIZE / 2, this.InventoryPosY * Inventory.SLOTSIZE + offsetY + Inventory.SLOTSIZE / 2);
   }
 
   public showItems() {
@@ -40,7 +29,7 @@ class InventorySlot {
   }
 
   addItem(item: Item) {
-    if (this.items[0].id === itemList.Air) {
+    if (this.items[0].getId() === itemList.Air) {
       this.items = [];
       this.items.push(item);
     } else {

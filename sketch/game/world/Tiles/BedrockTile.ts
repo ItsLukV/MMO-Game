@@ -3,7 +3,7 @@ class BedrockTile extends Tile {
     super(x, y, w, tileID.Bedrock);
   }
 
-  isSoild(): boolean {
+  isSolid(): boolean {
     return true;
   }
   isBreakable(): boolean {

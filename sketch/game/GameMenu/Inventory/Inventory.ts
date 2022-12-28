@@ -2,7 +2,7 @@ class Inventory {
   public backpack: InventorySlot[][];
 
   public showBackpack: boolean = false;
-  public selected: InventorySlot;
+  public selected: InventorySlot = null;
 
   static SLOTSIZE: number = 74;
   static BACKPACKWITDH: number = 10;
@@ -14,35 +14,22 @@ class Inventory {
     }
     for (let i = 0; i < this.backpack.length; i++) {
       for (let j = 0; j < this.backpack[i].length; j++) {
-        this.backpack[i][j] = new InventorySlot(
-          new Item(i, j, itemList.Air),
-          i,
-          j
-        );
+        this.backpack[i][j] = new InventorySlot(ItemGen.getEmpty(i, j), i, j);
       }
     }
 
     //TODO dev pickaxe
-    this.backpack[0][0].addItem(new Pickaxe(0, 0));
+    this.backpack[0][0].addItem(ItemGen.getPickaxe(0, 0));
+    this.backpack[1][0].addItem(ItemGen.getTeleportStick(1, 0));
   }
 
-  public giveItem(itemID: itemList) {
+  public giveItem(itemID: itemList, amount: number = 1) {
     let pos = this.findSlot(itemID);
     if (pos.x === -1 || pos.y === -1) {
       throw "No space";
     }
-    switch (itemID) {
-      case itemList.Stone:
-        this.backpack[pos.x][pos.y].addItem(new StoneItem(pos.x, pos.y));
-        break;
-      case itemList.Pickaxe:
-        this.backpack[pos.x][pos.y].addItem(new Pickaxe(pos.x, pos.y));
-        break;
-      case itemList.Grass:
-        this.backpack[pos.x][pos.y].addItem(new GrasItem(pos.x, pos.y));
-        break;
-      default:
-        console.log("No itemID:", itemID);
+    for (let i = 0; i < amount; i++) {
+      this.backpack[pos.x][pos.y].addItem(ItemGen.itempicker(itemID, pos.x, pos.y));
     }
   }
 
@@ -56,13 +43,10 @@ class Inventory {
   stackItem(itemID: itemList): Coords {
     let x = -1;
     let y = -1;
-    let backpack = game.getPlayer().inventory.backpack;
+    let backpack = game.getPlayer().getInventory().backpack;
     for (let i = 0; i < backpack.length; i++) {
       for (let j = 0; j < backpack[i].length; j++) {
-        if (
-          backpack[i][j].items[0].id === itemID &&
-          backpack[i][j].items[0].stackSize() > backpack[i][j].items.length
-        ) {
+        if (backpack[i][j].items[0].getId() === itemID && backpack[i][j].items[0].getStackSize() > backpack[i][j].items.length) {
           x = backpack[i][j].InventoryPosX;
           y = backpack[i][j].InventoryPosY;
         }
@@ -79,7 +63,7 @@ class Inventory {
     let y = -1;
     for (let i = 0; i < this.backpack.length; i++) {
       for (let j = 0; j < this.backpack[i].length; j++) {
-        if (this.backpack[i][j].items[0].id === itemList.Air) {
+        if (this.backpack[i][j].items[0].getId() === itemList.Air) {
           x = i;
           y = j;
           break;
@@ -110,8 +94,8 @@ class Inventory {
     let y = -1;
     for (let i = 0; i < this.backpack.length; i++) {
       for (let j = 0; j < this.backpack[i].length; j++) {
-        if (this.backpack[i][j].items[0].id === itemId) {
-          if (this.backpack[i][j].items.length === amount) {
+        if (this.backpack[i][j].items[0].getId() === itemId) {
+          if (this.backpack[i][j].items.length >= amount) {
             return { x: i, y: j };
           }
         }
@@ -121,18 +105,20 @@ class Inventory {
     return { x, y };
   }
 
-  hasItem(itemId: itemList): boolean {
+  hasItem(itemId: itemList, amount: number): boolean {
     for (let i = 0; i < this.backpack.length; i++) {
       for (let j = 0; j < this.backpack[i].length; j++) {
-        if (this.backpack[i][j].items[0].id === itemId) {
-          return true;
+        if (this.backpack[i][j].items[0].getId() === itemId) {
+          if (this.backpack[i][j].items.length >= amount) {
+            return true;
+          }
         }
       }
     }
     return false;
   }
 
-  public itemSelector() {
+  private itemSelector() {
     let mouseTilePos = this.boxSelector(mouseX, mouseY);
 
     let slot = this.backpack[mouseTilePos.x][mouseTilePos.y];
@@ -146,13 +132,39 @@ class Inventory {
     }
   }
 
+  public getSelectedItem(): Item[] {
+    if (this.selected !== null) {
+      return this.selected.items;
+    }
+  }
+
   public getSelectedItemId() {
-    return this.selected.items[0].id;
+    return this.selected.items[0].getId();
   }
 
   private boxSelector(x: number, y: number): Coords {
     x = Math.floor((x - offsetX) / Inventory.SLOTSIZE);
     y = Math.floor((y - offsetY) / Inventory.SLOTSIZE);
     return { x, y };
+  }
+
+  public removeItem(item: itemList, amount: number) {
+    for (let i = 0; i < amount; i++) {
+      let pos = this.findItem(item, 1);
+      let items = this.backpack[pos.x][pos.y].items;
+      items.pop();
+
+      if (items.length === 0) {
+        this.backpack[pos.x][pos.y].items[0] = ItemGen.getEmpty(pos.x, pos.y);
+      }
+    }
+  }
+
+  public mousePressed() {
+    this.itemSelector();
+    if (this.selected !== null)
+      this.selected.items.forEach((element) => {
+        element.itemSelected();
+      });
   }
 }

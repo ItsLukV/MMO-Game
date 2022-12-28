@@ -8,7 +8,7 @@ class StoneTile extends Tile {
     return { xp: 1, type: SkillsList.mining };
   }
 
-  isSoild(): boolean {
+  isSolid(): boolean {
     return true;
   }
 

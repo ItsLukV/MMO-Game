@@ -22,9 +22,8 @@ class WorldGenerator {
     }
 
     this.world[2][7] = 1;
-    // this.world[this.world.length - 5][
-    //   this.world[this.world.length - 5].length - 2
-    // ] = 2;
+    this.world[3][6] = 2;
+    this.world[3][5] = 2;
   }
 
   public getWorld(): number[][] {

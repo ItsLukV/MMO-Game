@@ -1,25 +1,17 @@
 class Game {
   private player: Player;
   private world: World;
-  mining: Mining;
   public OFFSETX: number;
   public OFFSETY: number;
   showMenu: menuList;
-  loading: boolean = true;
 
   constructor(world: World) {
     this.world = world;
     this.player = new Player(300, 100, PLAYER_SIZE, PLAYER_SIZE, playerImg);
-    this.mining = new Mining();
     this.showMenu = menuList.game;
   }
 
   public tick() {
-    if (this.loading) {
-      rect(100, 100, 100, 100);
-      return;
-    }
-
     this.OFFSETX = width / 2 - this.player.x - this.player.w / 2;
     this.OFFSETY = height / 2 - this.player.y - this.player.h / 2;
     translate(this.OFFSETX, this.OFFSETY);
@@ -28,9 +20,11 @@ class Game {
 
     this.world.show();
     this.player.show();
-
-    this.mining.mouseHover();
-
+    let itemSelected = this.player.getInventory().getSelectedItem();
+    if (itemSelected !== undefined)
+      itemSelected.forEach((Element) => {
+        Element.tick(this.player.x, this.player.y);
+      });
     switch (this.showMenu) {
       case menuList.crafting:
         this.player.getCrafting().show();
@@ -39,29 +33,32 @@ class Game {
         this.player.getInventory().show();
         break;
       case menuList.skill:
-        this.player.skillManager.show();
+        this.player.getSkillManager().show();
         break;
     }
+    this.player.getManaManager().show();
   }
 
   public mousePressed() {
-    this.mining.mousePressed();
     switch (this.showMenu) {
       case menuList.inventory:
-        this.player.getInventory().itemSelector();
+        this.player.getInventory().mousePressed();
         break;
       case menuList.crafting:
         this.player.getCrafting().clicked();
+        break;
+      default:
+        let itemSelected = this.player.getInventory().getSelectedItem();
+        if (itemSelected !== undefined)
+          itemSelected.forEach((element) => {
+            element.clicked(this.player.x, this.player.y);
+          });
+        break;
     }
   }
 
   public KeyPressed() {
-    this.player.pressed(
-      keyCode === 65,
-      keyCode === 68,
-      keyCode === 87,
-      keyCode === 83
-    );
+    this.player.pressed(keyCode === 65, keyCode === 68, keyCode === 87, keyCode === 83);
     switch (keyCode) {
       case 69:
         if (this.showMenu === menuList.inventory) {
@@ -77,7 +74,7 @@ class Game {
           this.showMenu = menuList.crafting;
         }
         break;
-      case 75:
+      case 66:
         if (this.showMenu === menuList.skill) {
           this.showMenu = menuList.game;
         } else {
@@ -88,12 +85,7 @@ class Game {
   }
 
   public KeyReleased() {
-    this.player.released(
-      keyCode === 65,
-      keyCode === 68,
-      keyCode === 87,
-      keyCode === 83
-    );
+    this.player.released(keyCode === 65, keyCode === 68, keyCode === 87, keyCode === 83);
   }
   getWorld(): World {
     return this.world;

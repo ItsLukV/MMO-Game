@@ -21,10 +21,11 @@ function preload() {
   tilesImg.push(loadImage("sketch/assets/Stone.png"));
   tilesImg.push(loadImage("sketch/assets/Bedrock.png"));
 
-  itemImg[itemList.Air] = null;
-  itemImg[itemList.Stone] = null;
-  itemImg[itemList.Grass] = null;
+  itemImg[itemList.Air] = loadImage("sketch/assets/item/air.png");
+  itemImg[itemList.Stone] = loadImage("sketch/assets/item/stone.png");
+  itemImg[itemList.Grass] = loadImage("sketch/assets/item/grass.png");
   itemImg[itemList.Pickaxe] = loadImage("sketch/assets/item/pickaxe.png");
+  itemImg[itemList.TeleportStick] = loadImage("sketch/assets/item/TeleportStick.png");
 
   breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_0.png"));
   breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_1.png"));

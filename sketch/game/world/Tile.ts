@@ -19,7 +19,7 @@ abstract class Tile {
     image(breakingImg[this._breakingLevel], this._x, this._y, this._w, this._w);
   }
 
-  public isSoild(): boolean {
+  public isSolid(): boolean {
     return false;
   }
 

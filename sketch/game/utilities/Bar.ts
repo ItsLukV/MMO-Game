@@ -21,7 +21,7 @@ class Bar {
   }
   show() {
     push();
-    translate(-game.OFFSETX, -game.OFFSETY);
+    translate(-game.OffSetX, -game.OffSetY);
 
     fill(this.color.r - 20, this.color.g - 20, this.color.b - 20, 90);
     rect(this.x - this.margin, this.y - this.margin, this.maxWidth + this.margin * 2, this.h + this.margin * 2);

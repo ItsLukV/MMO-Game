@@ -1,8 +1,8 @@
 class Game {
   private player: Player;
   private world: World;
-  public OFFSETX: number;
-  public OFFSETY: number;
+  public OffSetX: number;
+  public OffSetY: number;
 
   constructor(world: World) {
     this.world = world;
@@ -10,9 +10,9 @@ class Game {
   }
 
   public tick() {
-    this.OFFSETX = width / 2 - this.player.x - this.player.w / 2;
-    this.OFFSETY = height / 2 - this.player.y - this.player.h / 2;
-    translate(this.OFFSETX, this.OFFSETY);
+    this.OffSetX = width / 2 - this.player.x - this.player.w / 2;
+    this.OffSetY = height / 2 - this.player.y - this.player.h / 2;
+    translate(this.OffSetX, this.OffSetY);
 
     this.player.tick();
 

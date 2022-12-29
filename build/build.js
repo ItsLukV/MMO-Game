@@ -4,9 +4,9 @@ class Game {
         this.player = new Player(300, 100, PLAYER_SIZE, PLAYER_SIZE, playerImg);
     }
     tick() {
-        this.OFFSETX = width / 2 - this.player.x - this.player.w / 2;
-        this.OFFSETY = height / 2 - this.player.y - this.player.h / 2;
-        translate(this.OFFSETX, this.OFFSETY);
+        this.OffSetX = width / 2 - this.player.x - this.player.w / 2;
+        this.OffSetY = height / 2 - this.player.y - this.player.h / 2;
+        translate(this.OffSetX, this.OffSetY);
         this.player.tick();
         this.world.show();
         this.player.show();
@@ -280,13 +280,13 @@ class Entity {
 class Player extends Entity {
     constructor(x, y, w, h, img) {
         super(x, y, w, h, img);
-        this.GRAVITYSPEED = 2;
+        this.GravitySpeed = 2;
         this.gravity = true;
         this.xSpeed = 0;
         this.ySpeed = 0;
         this.airRes = 0.8;
         this.walkSpeed = 2;
-        this.JumbBoost = 40;
+        this.JumpBoost = 40;
         this.jump = true;
         this.up = false;
         this.down = false;
@@ -299,7 +299,7 @@ class Player extends Entity {
         this.showMenu = menuList.game;
     }
     tick() {
-        this.tyndekraft();
+        this.Gravity();
         this.wallCollision();
         this.groundCollision();
         this.wallRoof();
@@ -354,7 +354,7 @@ class Player extends Entity {
             this.xSpeed += this.walkSpeed;
         if (this.jump)
             if (this.up)
-                this.ySpeed -= this.JumbBoost;
+                this.ySpeed -= this.JumpBoost;
         if (this.down)
             this.ySpeed += this.walkSpeed;
     }
@@ -440,9 +440,9 @@ class Player extends Entity {
         if (down)
             this.down = false;
     }
-    tyndekraft() {
+    Gravity() {
         if (this.gravity)
-            this.ySpeed += this.GRAVITYSPEED;
+            this.ySpeed += this.GravitySpeed;
     }
     getInventory() {
         return this.inventory;
@@ -490,7 +490,7 @@ class Crafting extends Menu {
     }
     show() {
         push();
-        translate(-game.OFFSETX, -game.OFFSETY);
+        translate(-game.OffSetX, -game.OffSetY);
         rect(0 + this.widthOffset, 0 + this.heightOffset, width - this.widthOffset * 2, height - this.heightOffset * 2);
         this.buttons.forEach((item) => {
             item.show();
@@ -600,7 +600,7 @@ class Inventory {
     }
     show() {
         push();
-        translate(-game.OFFSETX, -game.OFFSETY);
+        translate(-game.OffSetX, -game.OffSetY);
         for (let i = 0; i < this.backpack.length; i++) {
             for (let j = 0; j < this.backpack[i].length; j++) {
                 this.backpack[i][j].showSlot();
@@ -859,7 +859,7 @@ class Mining extends Abilities {
         this.mouseHover();
     }
     abilityClicked() {
-        let tile = TileLookUp(mouseX - game.OFFSETX, mouseY - game.OFFSETY);
+        let tile = TileLookUp(mouseX - game.OffSetX, mouseY - game.OffSetY);
         let inventory = game.getPlayer().getInventory();
         if (!tile.isSolid())
             return;
@@ -882,10 +882,10 @@ class Mining extends Abilities {
         try {
             if (game.getPlayer().getInventory().showBackpack)
                 return;
-            if (!TileLookUp(mouseX - game.OFFSETX, mouseY - game.OFFSETY).isSolid())
+            if (!TileLookUp(mouseX - game.OffSetX, mouseY - game.OffSetY).isSolid())
                 return;
             push();
-            let mouseTile = GameWorldToTile(mouseX - game.OFFSETX, mouseY - game.OFFSETY);
+            let mouseTile = GameWorldToTile(mouseX - game.OffSetX, mouseY - game.OffSetY);
             let mousePos = TileToGameWorld(mouseTile.x, mouseTile.y);
             noFill();
             strokeWeight(5);
@@ -910,7 +910,7 @@ class Teleport extends Abilities {
     }
     tpPlayer(playerX, playerY) {
         let mana = game.getPlayer().getManaManager().getMana();
-        let mouseTile = GameWorldToTile(mouseX - game.OFFSETX, mouseY - game.OFFSETY);
+        let mouseTile = GameWorldToTile(mouseX - game.OffSetX, mouseY - game.OffSetY);
         let mousePos = TileToGameWorld(mouseTile.x, mouseTile.y);
         let rangeCheck = this.diameter / 2 >= dist(playerX, playerY, mousePos.x, mousePos.y);
         if (!rangeCheck)
@@ -927,7 +927,7 @@ class Teleport extends Abilities {
         this.abilityPreview(playerX, playerY);
     }
     abilityPreview(playerX, playerY) {
-        let mouseTile = GameWorldToTile(mouseX - game.OFFSETX, mouseY - game.OFFSETY);
+        let mouseTile = GameWorldToTile(mouseX - game.OffSetX, mouseY - game.OffSetY);
         let mousePos = TileToGameWorld(mouseTile.x, mouseTile.y);
         push();
         strokeWeight(3);
@@ -985,7 +985,7 @@ class SkillManager {
     }
     show() {
         push();
-        translate(-game.OFFSETX, -game.OFFSETY);
+        translate(-game.OffSetX, -game.OffSetY);
         rect(this.widthOffset, this.heightOffset, width - this.widthOffset * 2, height - this.heightOffset * 2);
         this.bars[SkillsList.mining].setMinValue(lvlReq[this.mining.getLvl()]);
         this.bars[SkillsList.mining].setMaxValue(lvlReq[this.mining.getLvl() + 1]);
@@ -1049,7 +1049,7 @@ class Bar {
     }
     show() {
         push();
-        translate(-game.OFFSETX, -game.OFFSETY);
+        translate(-game.OffSetX, -game.OffSetY);
         fill(this.color.r - 20, this.color.g - 20, this.color.b - 20, 90);
         rect(this.x - this.margin, this.y - this.margin, this.maxWidth + this.margin * 2, this.h + this.margin * 2);
         fill(this.color.r, this.color.g, this.color.b);

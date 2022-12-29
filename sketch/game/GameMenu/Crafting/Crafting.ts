@@ -45,7 +45,7 @@ class Crafting extends Menu {
 
   show() {
     push();
-    translate(-game.OFFSETX, -game.OFFSETY);
+    translate(-game.OffSetX, -game.OffSetY);
 
     rect(0 + this.widthOffset, 0 + this.heightOffset, width - this.widthOffset * 2, height - this.heightOffset * 2);
     this.buttons.forEach((item) => {

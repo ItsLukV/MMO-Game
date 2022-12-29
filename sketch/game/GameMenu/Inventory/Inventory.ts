@@ -77,7 +77,7 @@ class Inventory {
 
   public show() {
     push();
-    translate(-game.OFFSETX, -game.OFFSETY);
+    translate(-game.OffSetX, -game.OffSetY);
 
     for (let i = 0; i < this.backpack.length; i++) {
       for (let j = 0; j < this.backpack[i].length; j++) {

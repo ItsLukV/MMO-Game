@@ -10,7 +10,7 @@ class Mining extends Abilities {
     this.mouseHover();
   }
   abilityClicked(): void {
-    let tile = TileLookUp(mouseX - game.OFFSETX, mouseY - game.OFFSETY);
+    let tile = TileLookUp(mouseX - game.OffSetX, mouseY - game.OffSetY);
     let inventory = game.getPlayer().getInventory();
     if (!tile.isSolid()) return;
     if (!tile.isBreakable()) return;
@@ -28,9 +28,9 @@ class Mining extends Abilities {
     try {
       if (game.getPlayer().getInventory().showBackpack) return;
 
-      if (!TileLookUp(mouseX - game.OFFSETX, mouseY - game.OFFSETY).isSolid()) return;
+      if (!TileLookUp(mouseX - game.OffSetX, mouseY - game.OffSetY).isSolid()) return;
       push();
-      let mouseTile = GameWorldToTile(mouseX - game.OFFSETX, mouseY - game.OFFSETY);
+      let mouseTile = GameWorldToTile(mouseX - game.OffSetX, mouseY - game.OffSetY);
       let mousePos = TileToGameWorld(mouseTile.x, mouseTile.y);
       noFill();
       strokeWeight(5);

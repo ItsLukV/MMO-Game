@@ -1,11 +1,11 @@
 class Player extends Entity {
   private gravity: boolean;
-  private GRAVITYSPEED: number;
+  private GravitySpeed: number;
   private xSpeed: number;
   private ySpeed: number;
   private airRes: number;
   private walkSpeed: number;
-  private JumbBoost: number;
+  private JumpBoost: number;
   private jump: boolean;
   private up: boolean;
   private down: boolean;
@@ -19,13 +19,13 @@ class Player extends Entity {
 
   constructor(x: number, y: number, w: number, h: number, img: p5.Image) {
     super(x, y, w, h, img);
-    this.GRAVITYSPEED = 2;
+    this.GravitySpeed = 2;
     this.gravity = true;
     this.xSpeed = 0;
     this.ySpeed = 0;
     this.airRes = 0.8;
     this.walkSpeed = 2;
-    this.JumbBoost = 40;
+    this.JumpBoost = 40;
     this.jump = true;
     this.up = false;
     this.down = false;
@@ -39,7 +39,7 @@ class Player extends Entity {
   }
 
   tick() {
-    this.tyndekraft();
+    this.Gravity();
     this.wallCollision();
     this.groundCollision();
     this.wallRoof();
@@ -95,7 +95,7 @@ class Player extends Entity {
   private move() {
     if (this.left) this.xSpeed -= this.walkSpeed;
     if (this.right) this.xSpeed += this.walkSpeed;
-    if (this.jump) if (this.up) this.ySpeed -= this.JumbBoost;
+    if (this.jump) if (this.up) this.ySpeed -= this.JumpBoost;
     if (this.down) this.ySpeed += this.walkSpeed;
   }
 
@@ -185,8 +185,8 @@ class Player extends Entity {
     if (down) this.down = false;
   }
 
-  private tyndekraft() {
-    if (this.gravity) this.ySpeed += this.GRAVITYSPEED;
+  private Gravity() {
+    if (this.gravity) this.ySpeed += this.GravitySpeed;
   }
 
   public getInventory(): Inventory {

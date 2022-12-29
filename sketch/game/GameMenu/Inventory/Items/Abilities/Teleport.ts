@@ -17,7 +17,7 @@ class Teleport extends Abilities {
   private tpPlayer(playerX: number, playerY: number) {
     let mana = game.getPlayer().getManaManager().getMana();
 
-    let mouseTile = GameWorldToTile(mouseX - game.OFFSETX, mouseY - game.OFFSETY);
+    let mouseTile = GameWorldToTile(mouseX - game.OffSetX, mouseY - game.OffSetY);
     let mousePos = TileToGameWorld(mouseTile.x, mouseTile.y);
 
     let rangeCheck = this.diameter / 2 >= dist(playerX, playerY, mousePos.x, mousePos.y);
@@ -34,7 +34,7 @@ class Teleport extends Abilities {
     this.abilityPreview(playerX, playerY);
   }
   private abilityPreview(playerX: number, playerY: number) {
-    let mouseTile = GameWorldToTile(mouseX - game.OFFSETX, mouseY - game.OFFSETY);
+    let mouseTile = GameWorldToTile(mouseX - game.OffSetX, mouseY - game.OffSetY);
     let mousePos = TileToGameWorld(mouseTile.x, mouseTile.y);
     push();
     strokeWeight(3);

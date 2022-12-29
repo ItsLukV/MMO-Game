@@ -18,7 +18,7 @@ class SkillManager {
 
   public show(): void {
     push();
-    translate(-game.OFFSETX, -game.OFFSETY);
+    translate(-game.OffSetX, -game.OffSetY);
     rect(this.widthOffset, this.heightOffset, width - this.widthOffset * 2, height - this.heightOffset * 2);
     this.bars[SkillsList.mining].setMinValue(lvlReq[this.mining.getLvl()]);
     this.bars[SkillsList.mining].setMaxValue(lvlReq[this.mining.getLvl() + 1]);

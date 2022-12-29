@@ -15,6 +15,7 @@ class Player extends Entity {
   private crafting: Crafting;
   private skillManager: SkillManager;
   private manaManager: ManaManager;
+  showMenu: menuList;
 
   constructor(x: number, y: number, w: number, h: number, img: p5.Image) {
     super(x, y, w, h, img);
@@ -34,6 +35,7 @@ class Player extends Entity {
     this.crafting = new Crafting();
     this.skillManager = new SkillManager();
     this.manaManager = new ManaManager();
+    this.showMenu = menuList.game;
   }
 
   tick() {
@@ -46,6 +48,48 @@ class Player extends Entity {
     this.calcSpeed();
 
     this.manaManager.tick();
+  }
+
+  mousePressed() {
+    switch (this.showMenu) {
+      case menuList.inventory:
+        this.getInventory().mousePressed();
+        break;
+      case menuList.crafting:
+        this.getCrafting().clicked();
+        break;
+      default:
+        let itemSelected = this.getInventory().getSelectedItem();
+        if (itemSelected !== undefined)
+          itemSelected.forEach((element) => {
+            element.clicked(this.x, this.y);
+          });
+        break;
+    }
+  }
+
+  show() {
+    push();
+    imageMode(CENTER);
+    image(this.img, this.x, this.y, this.w, this.h);
+    pop();
+    switch (this.showMenu) {
+      case menuList.crafting:
+        this.getCrafting().show();
+        break;
+      case menuList.inventory:
+        this.getInventory().show();
+        break;
+      case menuList.skill:
+        this.getSkillManager().show();
+        break;
+    }
+    let itemSelected = this.getInventory().getSelectedItem();
+    if (itemSelected !== undefined)
+      itemSelected.forEach((Element) => {
+        Element.tick(this.x, this.y);
+      });
+    this.getManaManager().show();
   }
 
   private move() {

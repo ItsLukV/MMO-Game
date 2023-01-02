@@ -59,7 +59,7 @@ class ItemGen {
     return new Item(item);
   }
 
-  static itempicker(itemID: itemList, InventoryPosX: number, InventoryPosY: number): Item {
+  static itemPicker(itemID: itemList, InventoryPosX: number, InventoryPosY: number): Item {
     let item;
     switch (itemID) {
       case itemList.Air:

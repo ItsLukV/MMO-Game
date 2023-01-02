@@ -1,79 +1,97 @@
-abstract class Tile {
-  private _x: number;
-  private _y: number;
-  private _w: number;
-  private _id: number;
-  private _breakingLevel: number = 0;
-  protected regenerationSpeed: number = 1000;
-  constructor(x: number, y: number, w: number, id: number) {
-    this._x = x;
-    this._y = y;
-    this._w = w;
-    this._id = id;
+class Tile {
+  private x: number;
+  private y: number;
+  private w: number;
+  private id: number;
+  private breakingLevel: number = 0;
+  private regenerationSpeed: number = 1000;
+  private image: p5.Image;
+  private item: itemList;
+  private solid: boolean;
+  private breakable: boolean;
+  private hoverable: boolean;
+  constructor(obj: TileInput) {
+    this.x = obj.x * TILE_SIZE;
+    this.y = obj.y * TILE_SIZE;
+    this.w = obj.w;
+    this.id = obj.id;
+    this.image = obj.image;
+    this.item = obj.item;
+    this.breakingLevel = this.breakingLevel;
+    this.regenerationSpeed = obj.regenerationSpeed;
+    this.solid = obj.isSolid;
+    this.breakable = obj.isBreakable;
+    this.hoverable = obj.hoverable;
   }
 
-  abstract xp(): XP;
+  xp(): XP {
+    return { xp: 0, type: SkillsList.mining };
+  }
 
   public show() {
-    image(tilesImg[this._id], this._x, this._y, this._w, this._w);
-    image(breakingImg[this._breakingLevel], this._x, this._y, this._w, this._w);
+    image(this.image, this.x, this.y, this.w, this.w);
+    image(breakingImg[this.breakingLevel], this.x, this.y, this.w, this.w);
+  }
+
+  // Getters
+
+  public isHoverable() {
+    return this.hoverable;
   }
 
   public isSolid(): boolean {
-    return false;
+    return this.solid;
   }
 
   public isBreakable(): boolean {
-    return false;
+    return this.breakable;
   }
 
-  public item() {
-    return itemList.Air;
+  public getItem() {
+    return this.item;
   }
 
-  // Getters and setters
-
-  public getRegenerationSpeed() {
+  public getRegenerationSpeed(): number {
     return this.regenerationSpeed;
   }
 
-  public get id(): number {
-    return this._id;
+  public getId(): number {
+    return this.id;
   }
 
-  public set id(id: number) {
-    this._id = id;
+  public getX(): number {
+    return this.x;
   }
 
-  public get x(): number {
-    return this._x;
+  public getY(): number {
+    return this.y;
   }
 
-  public set xx(x: number) {
-    this._x = x;
+  public getW(): number {
+    return this.w;
   }
 
-  public get y(): number {
-    return this._y;
+  public getBreakingLevel(): number {
+    return this.breakingLevel;
   }
 
-  public set y(y: number) {
-    this._y = y;
+  public setBreakingLevel(v: number) {
+    this.breakingLevel = v;
   }
+}
 
-  public get w(): number {
-    return this._w;
-  }
-
-  public set w(w: number) {
-    this._w = w;
-  }
-
-  public get breakingLevel(): number {
-    return this._breakingLevel;
-  }
-
-  public set breakingLevel(v: number) {
-    this._breakingLevel = v;
-  }
+interface TileInput {
+  x: number;
+  y: number;
+  w: number;
+  id: tileList;
+  image: p5.Image;
+  item: itemList;
+  breakingLevel: number;
+  regenerationSpeed: number;
+  isSolid: boolean;
+  isBreakable: boolean;
+  xp: XP;
+  hoverable: boolean;
+  creationFunction?: any;
 }

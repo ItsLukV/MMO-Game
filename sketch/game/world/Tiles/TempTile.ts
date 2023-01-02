@@ -1,18 +1,8 @@
-class TempTile extends BedrockTile {
-  constructor(
-    x: number,
-    y: number,
-    w: number,
-    afterId: tileID,
-    regenerationSpeed: number
-  ) {
-    super(x, y, w);
-    setTimeout(() => {
-      let worldTile = GameWorldToTile(x, y);
-      game.getWorld().changeTile(worldTile.x, worldTile.y, afterId);
-    }, regenerationSpeed);
-  }
-  xp(): XP {
-    return { xp: 0, type: SkillsList.none };
-  }
-}
+// class TempTile extends BedrockTile {
+//   constructor(x: number, y: number, w: number, afterId: tileList, regenerationSpeed: number) {
+//     super(x, y, w);
+//   }
+//   xp(): XP {
+//     return { xp: 0, type: SkillsList.none };
+//   }
+// }

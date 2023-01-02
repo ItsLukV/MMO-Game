@@ -16,10 +16,12 @@ let gameState: GameStateList = GameStateList.Menu;
 function preload() {
   playerImg = loadImage("sketch/assets/Player.png");
 
-  tilesImg.push(loadImage("sketch/assets/Air.png"));
-  tilesImg.push(loadImage("sketch/assets/Grass.png"));
-  tilesImg.push(loadImage("sketch/assets/Stone.png"));
-  tilesImg.push(loadImage("sketch/assets/Bedrock.png"));
+  tilesImg[tileList.Air] = loadImage("sketch/assets/tiles/Air.png");
+  tilesImg[tileList.Grass] = loadImage("sketch/assets/tiles/Grass.png");
+  tilesImg[tileList.Stone] = loadImage("sketch/assets/tiles/Stone.png");
+  tilesImg[tileList.Bedrock] = loadImage("sketch/assets/tiles/Bedrock.png");
+  tilesImg[tileList.TempTile] = null;
+  tilesImg[tileList.Water] = loadImage("sketch/assets/tiles/Water.png");
 
   itemImg[itemList.Air] = loadImage("sketch/assets/item/air.png");
   itemImg[itemList.Stone] = loadImage("sketch/assets/item/stone.png");
@@ -43,7 +45,7 @@ function setup() {
   createCanvas(960, 640);
   world = new World();
 
-  worldGenerator = new WorldGenerator(world);
+  worldGenerator = new WorldGenerator();
   world.setWorld(worldGenerator.getWorld());
 
   game = new Game(world);

@@ -4,7 +4,7 @@ class Inventory {
   public showBackpack: boolean = false;
   public selected: InventorySlot = null;
 
-  static SLOTSIZE: number = 74;
+  static SlotSize: number = 74;
   static BACKPACKWITDH: number = 10;
   static BACKPACKHEIGHT: number = 3;
   constructor() {
@@ -29,17 +29,18 @@ class Inventory {
       throw "No space";
     }
     for (let i = 0; i < amount; i++) {
-      this.backpack[pos.x][pos.y].addItem(ItemGen.itempicker(itemID, pos.x, pos.y));
+      this.backpack[pos.x][pos.y].addItem(ItemGen.itemPicker(itemID, pos.x, pos.y));
     }
   }
 
   private findSlot(itemID: itemList): Coords {
-    let stackslot = this.stackItem(itemID);
-    if (stackslot.x != -1 || stackslot.y != -1) {
-      return stackslot;
+    let stackSlot = this.stackItem(itemID);
+    if (stackSlot.x != -1 || stackSlot.y != -1) {
+      return stackSlot;
     }
     return this.findEmptySlot();
   }
+
   stackItem(itemID: itemList): Coords {
     let x = -1;
     let y = -1;
@@ -143,8 +144,8 @@ class Inventory {
   }
 
   private boxSelector(x: number, y: number): Coords {
-    x = Math.floor((x - offsetX) / Inventory.SLOTSIZE);
-    y = Math.floor((y - offsetY) / Inventory.SLOTSIZE);
+    x = Math.floor((x - offsetX) / Inventory.SlotSize);
+    y = Math.floor((y - offsetY) / Inventory.SlotSize);
     return { x, y };
   }
 

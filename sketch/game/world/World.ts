@@ -32,8 +32,9 @@ class World {
 
   public show() {
     for (let i: number = 0; i < this.world.length; i++) {
-      for (let j: number = 0; j < this.world[i].length; j++)
+      for (let j: number = 0; j < this.world[i].length; j++) {
         this.tiles[i][j].show();
+      }
     }
   }
 
@@ -42,50 +43,12 @@ class World {
     this.load();
   }
 
-  public changeTile(
-    x: number,
-    y: number,
-    tile: tileID,
-    tempTile?: tileID,
-    regenerationSpeed?: number
-  ) {
+  public changeTile(x: number, y: number, tile: tileList, tempTile?: tileList, regenerationSpeed?: number) {
     this.world[x][y] = tile;
     this.tiles[x][y] = this.createTile(tile, x, y, tempTile, regenerationSpeed);
   }
 
-  private createTile(
-    tileId: tileID,
-    x: number,
-    y: number,
-    tempTile?: tileID,
-    regenerationSpeed?: number
-  ): Tile {
-    let tile;
-    switch (tileId) {
-      case tileID.Air:
-        tile = new AirTile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE);
-        break;
-      case tileID.Grass:
-        tile = new GrassTile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE);
-        break;
-      case tileID.Stone:
-        tile = new StoneTile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE);
-        break;
-      case tileID.Bedrock:
-        tile = new BedrockTile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE);
-        break;
-      case tileID.TempTile:
-        tile = new TempTile(
-          x * TILE_SIZE,
-          y * TILE_SIZE,
-          TILE_SIZE,
-          tempTile,
-          regenerationSpeed
-        );
-        break;
-      default:
-        throw new Error(`No Tile with the id: ${tileId}`);
-    }
-    return tile;
+  private createTile(tileId: tileList, x: number, y: number, tempTile?: tileList, regenerationSpeed?: number): Tile {
+    return TilesGen.tilePicker(tileId, x, y, tempTile, regenerationSpeed);
   }
 }

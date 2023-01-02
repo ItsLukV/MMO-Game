@@ -13,13 +13,13 @@ class InventorySlot {
   showSlot() {
     if (this.selected) fill(0, 255, 0);
     else fill(220);
-    rect(this.InventoryPosX * Inventory.SLOTSIZE + offsetX, this.InventoryPosY * Inventory.SLOTSIZE + offsetY, Inventory.SLOTSIZE, Inventory.SLOTSIZE);
+    rect(this.InventoryPosX * Inventory.SlotSize + offsetX, this.InventoryPosY * Inventory.SlotSize + offsetY, Inventory.SlotSize, Inventory.SlotSize);
   }
 
   showStackSize() {
     if (this.items.length <= 1) return;
     fill(0);
-    text(this.items.length, this.InventoryPosX * Inventory.SLOTSIZE + offsetX + Inventory.SLOTSIZE / 2, this.InventoryPosY * Inventory.SLOTSIZE + offsetY + Inventory.SLOTSIZE / 2);
+    text(this.items.length, this.InventoryPosX * Inventory.SlotSize + offsetX + Inventory.SlotSize / 2, this.InventoryPosY * Inventory.SlotSize + offsetY + Inventory.SlotSize / 2);
   }
 
   public showItems() {

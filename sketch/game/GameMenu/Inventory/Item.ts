@@ -17,10 +17,10 @@ class Item {
   }
 
   showItem() {
-    let itemBoxOffset = (Inventory.SLOTSIZE - this.width) / 2;
-    let offsetX = width / 2 - (Inventory.SLOTSIZE * Inventory.BACKPACKWITDH) / 2;
-    let offsetY = height / 2 - (Inventory.SLOTSIZE * Inventory.BACKPACKHEIGHT) / 2;
-    image(this.img, this.InventoryPosX * Inventory.SLOTSIZE + offsetX + itemBoxOffset, this.InventoryPosY * Inventory.SLOTSIZE + offsetY + itemBoxOffset, this.width, this.width);
+    let itemBoxOffset = (Inventory.SlotSize - this.width) / 2;
+    let offsetX = width / 2 - (Inventory.SlotSize * Inventory.BACKPACKWITDH) / 2;
+    let offsetY = height / 2 - (Inventory.SlotSize * Inventory.BACKPACKHEIGHT) / 2;
+    image(this.img, this.InventoryPosX * Inventory.SlotSize + offsetX + itemBoxOffset, this.InventoryPosY * Inventory.SlotSize + offsetY + itemBoxOffset, this.width, this.width);
   }
   // showItem() {
   //   push();

@@ -13,7 +13,7 @@ class Cheating {
     game.getPlayer().y = y;
   }
 
-  changeTile(x: number, y: number, tileId: tileID) {
+  changeTile(x: number, y: number, tileId: tileList) {
     game.getWorld().changeTile(x, y, tileId);
   }
 

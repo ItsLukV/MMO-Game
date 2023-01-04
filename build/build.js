@@ -1005,6 +1005,8 @@ class Teleport extends Abilities {
         this.abilityPreview(playerX, playerY);
     }
     abilityPreview(playerX, playerY) {
+        if (game.getPlayer().showMenu != menuList.game)
+            return;
         let mouseTile = GameWorldToTile(mouseX - game.OffSetX, mouseY - game.OffSetY);
         let mousePos = TileToGameWorld(mouseTile.x, mouseTile.y);
         push();

@@ -37,6 +37,7 @@ class Teleport extends Abilities {
 	abilityTick(playerX: number, playerY: number): void {
 		this.abilityPreview(playerX, playerY);
 	}
+
 	private abilityPreview(playerX: number, playerY: number) {
 		if (game.getPlayer().showMenu != menuList.game) return;
 

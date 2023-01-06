@@ -69,29 +69,29 @@ var GameStateList;
 })(GameStateList || (GameStateList = {}));
 let gameState = GameStateList.Menu;
 function preload() {
-    playerImg = loadImage("sketch/assets/Player.png");
-    tilesImg[tileList.Air] = loadImage("sketch/assets/tiles/Air.png");
-    tilesImg[tileList.Grass] = loadImage("sketch/assets/tiles/Grass.png");
-    tilesImg[tileList.Stone] = loadImage("sketch/assets/tiles/Stone.png");
-    tilesImg[tileList.Bedrock] = loadImage("sketch/assets/tiles/Bedrock.png");
+    playerImg = loadImage("assets/player.png");
+    tilesImg[tileList.Air] = loadImage("assets/tiles/Air.png");
+    tilesImg[tileList.Grass] = loadImage("assets/tiles/Grass.png");
+    tilesImg[tileList.Stone] = loadImage("assets/tiles/Stone.png");
+    tilesImg[tileList.Bedrock] = loadImage("assets/tiles/Bedrock.png");
     tilesImg[tileList.TempTile] = null;
-    tilesImg[tileList.Water] = loadImage("sketch/assets/tiles/Water.png");
-    itemImg[itemList.Air] = loadImage("sketch/assets/item/air.png");
-    itemImg[itemList.Stone] = loadImage("sketch/assets/item/stone.png");
-    itemImg[itemList.Grass] = loadImage("sketch/assets/item/grass.png");
-    itemImg[itemList.Pickaxe] = loadImage("sketch/assets/item/pickaxe.png");
-    itemImg[itemList.TeleportStick] = loadImage("sketch/assets/item/TeleportStick.png");
-    breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_0.png"));
-    breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_1.png"));
-    breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_2.png"));
-    breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_3.png"));
-    breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_4.png"));
-    breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_5.png"));
-    breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_6.png"));
-    breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_7.png"));
-    breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_8.png"));
-    breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_9.png"));
-    breakingImg.push(loadImage("sketch/assets/breaking/destroy_stage_10.png"));
+    tilesImg[tileList.Water] = loadImage("assets/tiles/Water.png");
+    itemImg[itemList.Air] = loadImage("assets/item/air.png");
+    itemImg[itemList.Stone] = loadImage("assets/item/stone.png");
+    itemImg[itemList.Grass] = loadImage("assets/item/grass.png");
+    itemImg[itemList.Pickaxe] = loadImage("assets/item/pickaxe.png");
+    itemImg[itemList.TeleportStick] = loadImage("assets/item/TeleportStick.png");
+    breakingImg.push(loadImage("assets/breaking/destroy_stage_0.png"));
+    breakingImg.push(loadImage("assets/breaking/destroy_stage_1.png"));
+    breakingImg.push(loadImage("assets/breaking/destroy_stage_2.png"));
+    breakingImg.push(loadImage("assets/breaking/destroy_stage_3.png"));
+    breakingImg.push(loadImage("assets/breaking/destroy_stage_4.png"));
+    breakingImg.push(loadImage("assets/breaking/destroy_stage_5.png"));
+    breakingImg.push(loadImage("assets/breaking/destroy_stage_6.png"));
+    breakingImg.push(loadImage("assets/breaking/destroy_stage_7.png"));
+    breakingImg.push(loadImage("assets/breaking/destroy_stage_8.png"));
+    breakingImg.push(loadImage("assets/breaking/destroy_stage_9.png"));
+    breakingImg.push(loadImage("assets/breaking/destroy_stage_10.png"));
 }
 function setup() {
     createCanvas(960, 640);
@@ -487,7 +487,6 @@ class PlayerCharacterHandler {
     show() {
         let player = game.getPlayer();
         this.body.show(player.x - this.body.getW() / 2, player.y - this.body.getH() / 2);
-        this.rightArm.show();
     }
 }
 class Body extends BodyPart {

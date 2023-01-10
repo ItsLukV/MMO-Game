@@ -9,8 +9,8 @@ class Cheating {
   }
 
   setPlayer(x: number, y: number) {
-    game.getPlayer().x = x;
-    game.getPlayer().y = y;
+    game.getPlayer().x = x * TILE_SIZE;
+    game.getPlayer().y = y * TILE_SIZE;
   }
 
   changeTile(x: number, y: number, tileId: tileList) {
@@ -27,4 +27,5 @@ class Cheating {
   }
 }
 
+// TODO Remove
 let cheats = new Cheating();

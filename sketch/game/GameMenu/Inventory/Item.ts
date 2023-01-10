@@ -22,16 +22,6 @@ class Item {
     let offsetY = height / 2 - (Inventory.SlotSize * Inventory.BACKPACKHEIGHT) / 2;
     image(this.img, this.InventoryPosX * Inventory.SlotSize + offsetX + itemBoxOffset, this.InventoryPosY * Inventory.SlotSize + offsetY + itemBoxOffset, this.width, this.width);
   }
-  // showItem() {
-  //   push();
-
-  //   let itemBoxOffset = (Inventory.SLOTSIZE - this.width) / 2;
-  //   let offsetX = width / 2 - (Inventory.SLOTSIZE * Inventory.BACKPACKWITDH) / 2;
-  //   let offsetY = height / 2 - (Inventory.SLOTSIZE * Inventory.BACKPACKHEIGHT) / 2;
-  //   fill(255, 255, 255);
-  //   rect(this.InventoryPosX * Inventory.SLOTSIZE + offsetX + itemBoxOffset, this.InventoryPosY * Inventory.SLOTSIZE + offsetY + itemBoxOffset, this.width, this.width);
-  //   pop();
-  // }
 
   getStackSize(): number {
     return this.stackSize;

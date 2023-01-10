@@ -16,6 +16,7 @@ enum tileList {
   Bedrock = 3,
   TempTile = 4,
   Water = 5,
+  Dirt = 6,
 }
 
 enum itemList {

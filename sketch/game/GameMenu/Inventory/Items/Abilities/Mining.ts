@@ -1,7 +1,7 @@
 class Mining extends Abilities {
   manaCost: number = 0;
   abilitySelected(): void {
-    throw new Error("Method not implemented.");
+    console.info("A mining item a been selected");
   }
   constructor() {
     super();
@@ -12,7 +12,6 @@ class Mining extends Abilities {
   abilityClicked(): void {
     let tile = TileLookUp(mouseX - game.OffSetX, mouseY - game.OffSetY);
     let inventory = game.getPlayer().getInventory();
-    console.log(tile);
     if (!tile.isSolid()) return;
     if (!tile.isBreakable()) return;
     if (inventory.showBackpack) return;
@@ -21,7 +20,8 @@ class Mining extends Abilities {
     else if (tile.getBreakingLevel() === breakingImg.length - 1) {
       let worldTile = GameWorldToTile(tile.getX(), tile.getY());
       inventory.giveItem(tile.getItem());
-      game.getWorld().changeTile(worldTile.x, worldTile.y, tileList.TempTile, tile.getId(), tile.getRegenerationSpeed());
+      // game.getWorld().changeTile(worldTile.x, worldTile.y, tileList.TempTile, tile.getId(), tile.getRegenerationSpeed());
+      game.getWorld().changeTile(worldTile.x, worldTile.y, tileList.Air);
       game.getPlayer().getSkillManager().addXp(tile.xp());
     }
   }

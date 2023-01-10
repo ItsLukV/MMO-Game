@@ -1,5 +1,12 @@
 class TilesGen {
   constructor() {}
+
+  /**
+   * Creates and returns a Bedrock tile
+   * @param x pos in world/tiles array
+   * @param y pos in world/tiles array
+   * @returns
+   */
   static getBedrockTile(x: number, y: number): Tile {
     let tile: TileInput = {
       x: x,
@@ -19,6 +26,12 @@ class TilesGen {
     return new Tile(tile);
   }
 
+  /**
+   * Creates and returns a Air tile
+   * @param x pos in world/tiles array
+   * @param y pos in world/tiles array
+   * @returns
+   */
   static getAirTile(x: number, y: number): Tile {
     let tile: TileInput = {
       x: x,
@@ -37,6 +50,12 @@ class TilesGen {
     return new Tile(tile);
   }
 
+  /**
+   * Creates and returns a Grass tile
+   * @param x pos in world/tiles array
+   * @param y pos in world/tiles array
+   * @returns
+   */
   static getGrassTile(x: number, y: number): Tile {
     let tile: TileInput = {
       x: x,
@@ -55,6 +74,36 @@ class TilesGen {
     return new Tile(tile);
   }
 
+  /**
+   * Creates and returns a Grass tile
+   * @param x pos in world/tiles array
+   * @param y pos in world/tiles array
+   * @returns
+   */
+  static getDirtTile(x: number, y: number): Tile {
+    let tile: TileInput = {
+      x: x,
+      y: y,
+      w: TILE_SIZE,
+      id: tileList.Grass,
+      image: tilesImg[tileList.Dirt],
+      item: itemList.Grass,
+      breakingLevel: 0,
+      regenerationSpeed: 1000 * 60,
+      isSolid: true,
+      isBreakable: true,
+      hoverable: true,
+      xp: { xp: 1, type: SkillsList.mining },
+    };
+    return new Tile(tile);
+  }
+
+  /**
+   * Creates and returns a Stone tile
+   * @param x pos in world/tiles array
+   * @param y pos in world/tiles array
+   * @returns
+   */
   static getStoneTile(x: number, y: number): Tile {
     let tile: TileInput = {
       x: x,
@@ -72,6 +121,15 @@ class TilesGen {
     };
     return new Tile(tile);
   }
+
+  /**
+   * Creates and returns a Temp tile
+   * @param x pos in world/tiles array
+   * @param y pos in world/tiles array
+   * @param afterId TileList id of the tile it changes to
+   * @param regenerationSpeed How long the tempTile is alive
+   * @returns
+   */
   static getTempTile(x: number, y: number, afterId: tileList, regenerationSpeed: number): Tile {
     let tile: TileInput = {
       x: x,
@@ -95,6 +153,13 @@ class TilesGen {
     };
     return new Tile(tile);
   }
+
+  /**
+   * Creates and returns a Water tile
+   * @param x pos in world/tiles array
+   * @param y pos in world/tiles array
+   * @returns
+   */
   static getWaterTile(x: number, y: number): Tile {
     let tile: TileInput = {
       x: x,
@@ -113,6 +178,15 @@ class TilesGen {
     return new Tile(tile);
   }
 
+  /**
+   * Returns a tile based on tileId
+   * @param tileId Id of the tile in question
+   * @param x pos in world/tiles array
+   * @param y pos in world/tiles array
+   * @param afterId TileList id of the tile it changes to
+   * @param regenerationSpeed How long the tempTile is alive
+   * @returns
+   */
   static tilePicker(tileId: tileList, x: number, y: number, afterId?: tileList, regenerationSpeed?: number): Tile {
     switch (tileId) {
       case tileList.Air:
@@ -127,6 +201,8 @@ class TilesGen {
         return TilesGen.getTempTile(x, y, afterId, regenerationSpeed);
       case tileList.Water:
         return TilesGen.getWaterTile(x, y);
+      case tileList.Dirt:
+        return TilesGen.getDirtTile(x, y);
     }
   }
 }

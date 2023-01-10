@@ -1,0 +1,126 @@
+Date : 2023-01-10 16:34:46
+Directory : c:\repos\MMO-Game\sketch
+Total : 71 files,  723 codes, 273 comments, 130 blanks, all 1126 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| TypeScript |         70 |        708 |        273 |        129 |      1,110 |
+| JSON       |          1 |         15 |          0 |          1 |         16 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++--------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                           | files      | code       | comment    | blank      | total      |
++--------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                              |         71 |        723 |        273 |        130 |      1,126 |
+| ..                                                                             |         23 |       -919 |        -17 |       -128 |     -1,064 |
+| ..\MMO-Game                                                                    |         23 |       -919 |        -17 |       -128 |     -1,064 |
+| ..\MMO-Game\sketch                                                             |         23 |       -919 |        -17 |       -128 |     -1,064 |
+| ..\MMO-Game\sketch\Entity                                                      |          2 |       -163 |         -6 |        -20 |       -189 |
+| ..\MMO-Game\sketch\Inventory                                                   |          5 |       -190 |         -1 |        -24 |       -215 |
+| ..\MMO-Game\sketch\Inventory\Items                                             |          2 |        -15 |          0 |         -2 |        -17 |
+| ..\MMO-Game\sketch\Menu                                                        |          3 |        -64 |         -2 |         -9 |        -75 |
+| ..\MMO-Game\sketch\Menu\Buttons                                                |          2 |        -34 |         -2 |         -6 |        -42 |
+| ..\MMO-Game\sketch\utilities                                                   |          3 |       -107 |         -2 |        -15 |       -124 |
+| ..\MMO-Game\sketch\world                                                       |          7 |       -209 |         -4 |        -38 |       -251 |
+| ..\MMO-Game\sketch\world\Tiles                                                 |          4 |        -47 |          0 |        -12 |        -59 |
+| StartMenu                                                                      |          4 |        126 |          0 |         15 |        141 |
+| StartMenu\Buttons                                                              |          2 |         34 |          0 |          4 |         38 |
+| Test                                                                           |          1 |         25 |          1 |          6 |         32 |
+| data                                                                           |          1 |         15 |          0 |          1 |         16 |
+| data\crafting                                                                  |          1 |         15 |          0 |          1 |         16 |
+| game                                                                           |         40 |      1,314 |        289 |        217 |      1,820 |
+| game\Entity                                                                    |         11 |        206 |        104 |         42 |        352 |
+| game\Entity\PlayerCharacter                                                    |          9 |          0 |         95 |         16 |        111 |
+| game\Entity\PlayerCharacter\BodyPart                                           |          6 |          0 |         57 |         10 |         67 |
+| game\GameMenu                                                                  |         15 |        577 |         21 |         83 |        681 |
+| game\GameMenu\Crafting                                                         |          2 |         90 |          5 |         10 |        105 |
+| game\GameMenu\Inventory                                                        |          8 |        411 |         16 |         59 |        486 |
+| game\GameMenu\Inventory\Items                                                  |          4 |         91 |          2 |         14 |        107 |
+| game\GameMenu\Inventory\Items\Abilities                                        |          3 |         90 |          2 |         13 |        105 |
+| game\GameMenu\Skills                                                           |          4 |         71 |          0 |         13 |         84 |
+| game\Mana                                                                      |          1 |         31 |          0 |          7 |         38 |
+| game\utilities                                                                 |          4 |        172 |          1 |         25 |        198 |
+| game\world                                                                     |          9 |        328 |        163 |         60 |        551 |
+| game\world\Tiles                                                               |          5 |          0 |         72 |         15 |         87 |
++--------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++--------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                       | language   | code       | comment    | blank      | total      |
++--------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| c:\repos\MMO-Game\MMO-Game\sketch\Entity\Entity.ts                             | TypeScript |        -24 |          0 |         -3 |        -27 |
+| c:\repos\MMO-Game\MMO-Game\sketch\Entity\Player.ts                             | TypeScript |       -139 |         -6 |        -17 |       -162 |
+| c:\repos\MMO-Game\MMO-Game\sketch\Game.ts                                      | TypeScript |        -54 |          0 |         -9 |        -63 |
+| c:\repos\MMO-Game\MMO-Game\sketch\Inventory\Inventory.ts                       | TypeScript |        -93 |         -1 |        -13 |       -107 |
+| c:\repos\MMO-Game\MMO-Game\sketch\Inventory\InventorySlot.ts                   | TypeScript |        -22 |          0 |         -2 |        -24 |
+| c:\repos\MMO-Game\MMO-Game\sketch\Inventory\Item.ts                            | TypeScript |        -60 |          0 |         -7 |        -67 |
+| c:\repos\MMO-Game\MMO-Game\sketch\Inventory\Items\Pickaxe.ts                   | TypeScript |        -10 |          0 |         -1 |        -11 |
+| c:\repos\MMO-Game\MMO-Game\sketch\Inventory\Items\StoneItem.ts                 | TypeScript |         -5 |          0 |         -1 |         -6 |
+| c:\repos\MMO-Game\MMO-Game\sketch\Menu\Buttons\StartButton.ts                  | TypeScript |        -17 |         -1 |         -3 |        -21 |
+| c:\repos\MMO-Game\MMO-Game\sketch\Menu\Buttons\WorldGenButton.ts               | TypeScript |        -17 |         -1 |         -3 |        -21 |
+| c:\repos\MMO-Game\MMO-Game\sketch\Menu\Menu.ts                                 | TypeScript |        -30 |          0 |         -3 |        -33 |
+| c:\repos\MMO-Game\MMO-Game\sketch\Mining.ts                                    | TypeScript |        -37 |         -2 |         -3 |        -42 |
+| c:\repos\MMO-Game\MMO-Game\sketch\sketch.ts                                    | TypeScript |        -95 |          0 |        -10 |       -105 |
+| c:\repos\MMO-Game\MMO-Game\sketch\utilities\Buttons.ts                         | TypeScript |        -62 |          0 |         -7 |        -69 |
+| c:\repos\MMO-Game\MMO-Game\sketch\utilities\Constants.ts                       | TypeScript |        -16 |         -1 |         -4 |        -21 |
+| c:\repos\MMO-Game\MMO-Game\sketch\utilities\Utiles.ts                          | TypeScript |        -29 |         -1 |         -4 |        -34 |
+| c:\repos\MMO-Game\MMO-Game\sketch\world\Tile.ts                                | TypeScript |        -53 |         -1 |        -14 |        -68 |
+| c:\repos\MMO-Game\MMO-Game\sketch\world\Tiles\AirTile.ts                       | TypeScript |        -11 |          0 |         -3 |        -14 |
+| c:\repos\MMO-Game\MMO-Game\sketch\world\Tiles\BedrockTile.ts                   | TypeScript |        -11 |          0 |         -2 |        -13 |
+| c:\repos\MMO-Game\MMO-Game\sketch\world\Tiles\GrassTile.ts                     | TypeScript |        -11 |          0 |         -3 |        -14 |
+| c:\repos\MMO-Game\MMO-Game\sketch\world\Tiles\StoneTile.ts                     | TypeScript |        -14 |          0 |         -4 |        -18 |
+| c:\repos\MMO-Game\MMO-Game\sketch\world\World.ts                               | TypeScript |        -84 |          0 |         -7 |        -91 |
+| c:\repos\MMO-Game\MMO-Game\sketch\world\WorldGen.ts                            | TypeScript |        -25 |         -3 |         -5 |        -33 |
+| c:\repos\MMO-Game\sketch\Game.ts                                               | TypeScript |         62 |          0 |         11 |         73 |
+| c:\repos\MMO-Game\sketch\StartMenu\Buttons.ts                                  | TypeScript |         62 |          0 |          8 |         70 |
+| c:\repos\MMO-Game\sketch\StartMenu\Buttons\StartButton.ts                      | TypeScript |         17 |          0 |          2 |         19 |
+| c:\repos\MMO-Game\sketch\StartMenu\Buttons\WorldGenButton.ts                   | TypeScript |         17 |          0 |          2 |         19 |
+| c:\repos\MMO-Game\sketch\StartMenu\StartMenu.ts                                | TypeScript |         30 |          0 |          3 |         33 |
+| c:\repos\MMO-Game\sketch\Test\Cheating.ts                                      | TypeScript |         25 |          1 |          6 |         32 |
+| c:\repos\MMO-Game\sketch\data\crafting\recipes.json                            | JSON       |         15 |          0 |          1 |         16 |
+| c:\repos\MMO-Game\sketch\game\Entity\Entity.ts                                 | TypeScript |         24 |          0 |          3 |         27 |
+| c:\repos\MMO-Game\sketch\game\Entity\Player.ts                                 | TypeScript |        182 |          9 |         23 |        214 |
+| c:\repos\MMO-Game\sketch\game\Entity\PlayerCharacter\BodyJoint.ts              | TypeScript |          0 |         10 |          2 |         12 |
+| c:\repos\MMO-Game\sketch\game\Entity\PlayerCharacter\BodyPart.ts               | TypeScript |          0 |          3 |          1 |          4 |
+| c:\repos\MMO-Game\sketch\game\Entity\PlayerCharacter\BodyPart\Body.ts          | TypeScript |          0 |         28 |          5 |         33 |
+| c:\repos\MMO-Game\sketch\game\Entity\PlayerCharacter\BodyPart\Head.ts          | TypeScript |          0 |          6 |          1 |          7 |
+| c:\repos\MMO-Game\sketch\game\Entity\PlayerCharacter\BodyPart\LeftArm.ts       | TypeScript |          0 |          6 |          1 |          7 |
+| c:\repos\MMO-Game\sketch\game\Entity\PlayerCharacter\BodyPart\LeftLeg.ts       | TypeScript |          0 |          6 |          1 |          7 |
+| c:\repos\MMO-Game\sketch\game\Entity\PlayerCharacter\BodyPart\RightArm.ts      | TypeScript |          0 |          5 |          1 |          6 |
+| c:\repos\MMO-Game\sketch\game\Entity\PlayerCharacter\BodyPart\RightLeg.ts      | TypeScript |          0 |          6 |          1 |          7 |
+| c:\repos\MMO-Game\sketch\game\Entity\PlayerCharacter\PlayerCharacterHandler.ts | TypeScript |          0 |         25 |          3 |         28 |
+| c:\repos\MMO-Game\sketch\game\GameMenu\Crafting\Crafting.ts                    | TypeScript |         74 |          5 |          8 |         87 |
+| c:\repos\MMO-Game\sketch\game\GameMenu\Crafting\CraftingButton.ts              | TypeScript |         16 |          0 |          2 |         18 |
+| c:\repos\MMO-Game\sketch\game\GameMenu\Inventory\Inventory.ts                  | TypeScript |        149 |          2 |         21 |        172 |
+| c:\repos\MMO-Game\sketch\game\GameMenu\Inventory\InventorySlot.ts              | TypeScript |         35 |          3 |          6 |         44 |
+| c:\repos\MMO-Game\sketch\game\GameMenu\Inventory\Item.ts                       | TypeScript |         58 |          9 |         12 |         79 |
+| c:\repos\MMO-Game\sketch\game\GameMenu\Inventory\ItemGen.ts                    | TypeScript |         78 |          0 |          6 |         84 |
+| c:\repos\MMO-Game\sketch\game\GameMenu\Inventory\Items\Abilities\Abilities.ts  | TypeScript |          7 |          0 |          1 |          8 |
+| c:\repos\MMO-Game\sketch\game\GameMenu\Inventory\Items\Abilities\Mining.ts     | TypeScript |         41 |          1 |          2 |         44 |
+| c:\repos\MMO-Game\sketch\game\GameMenu\Inventory\Items\Abilities\Teleport.ts   | TypeScript |         42 |          1 |         10 |         53 |
+| c:\repos\MMO-Game\sketch\game\GameMenu\Inventory\Items\Stick.ts                | TypeScript |          1 |          0 |          1 |          2 |
+| c:\repos\MMO-Game\sketch\game\GameMenu\Menu.ts                                 | TypeScript |          5 |          0 |          1 |          6 |
+| c:\repos\MMO-Game\sketch\game\GameMenu\Skills\Skill.ts                         | TypeScript |         33 |          0 |          7 |         40 |
+| c:\repos\MMO-Game\sketch\game\GameMenu\Skills\SkillManager.ts                  | TypeScript |         27 |          0 |          3 |         30 |
+| c:\repos\MMO-Game\sketch\game\GameMenu\Skills\SkillMining.ts                   | TypeScript |          7 |          0 |          1 |          8 |
+| c:\repos\MMO-Game\sketch\game\GameMenu\Skills\lvlReq.ts                        | TypeScript |          4 |          0 |          2 |          6 |
+| c:\repos\MMO-Game\sketch\game\Mana\ManaManager.ts                              | TypeScript |         31 |          0 |          7 |         38 |
+| c:\repos\MMO-Game\sketch\game\utilities\Bar.ts                                 | TypeScript |         39 |          0 |          5 |         44 |
+| c:\repos\MMO-Game\sketch\game\utilities\Constants.ts                           | TypeScript |         45 |          0 |          9 |         54 |
+| c:\repos\MMO-Game\sketch\game\utilities\Utiles.ts                              | TypeScript |         74 |          1 |          8 |         83 |
+| c:\repos\MMO-Game\sketch\game\utilities\Vec.ts                                 | TypeScript |         14 |          0 |          3 |         17 |
+| c:\repos\MMO-Game\sketch\game\world\Tile.ts                                    | TypeScript |         81 |          1 |         16 |         98 |
+| c:\repos\MMO-Game\sketch\game\world\TilesGen.ts                                | TypeScript |        146 |         53 |         10 |        209 |
+| c:\repos\MMO-Game\sketch\game\world\Tiles\AirTile.ts                           | TypeScript |          0 |         14 |          3 |         17 |
+| c:\repos\MMO-Game\sketch\game\world\Tiles\BedrockTile.ts                       | TypeScript |          0 |         14 |          2 |         16 |
+| c:\repos\MMO-Game\sketch\game\world\Tiles\GrassTile.ts                         | TypeScript |          0 |         18 |          4 |         22 |
+| c:\repos\MMO-Game\sketch\game\world\Tiles\StoneTile.ts                         | TypeScript |          0 |         18 |          5 |         23 |
+| c:\repos\MMO-Game\sketch\game\world\Tiles\TempTile.ts                          | TypeScript |          0 |          8 |          1 |          9 |
+| c:\repos\MMO-Game\sketch\game\world\World.ts                                   | TypeScript |         39 |         11 |          8 |         58 |
+| c:\repos\MMO-Game\sketch\game\world\WorldGen.ts                                | TypeScript |         62 |         26 |         11 |         99 |
+| c:\repos\MMO-Game\sketch\sketch.ts                                             | TypeScript |        100 |          0 |          8 |        108 |
+| Total                                                                          |            |        723 |        273 |        130 |      1,126 |
++--------------------------------------------------------------------------------+------------+------------+------------+------------+------------+

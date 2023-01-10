@@ -4,9 +4,17 @@ class Game {
   public OffSetX: number;
   public OffSetY: number;
 
-  constructor(world: World) {
-    this.world = world;
-    this.player = new Player(300, 100, PLAYER_SIZE, PLAYER_SIZE, playerImg);
+  constructor() {
+    this.world = new World();
+
+    let tryX = 2;
+    let playerSpawn: Coords = this.world.getWorldGen().safeSpawn(tryX);
+
+    while (playerSpawn.x === -1 || playerSpawn.y === -1) {
+      tryX++;
+      playerSpawn = this.world.getWorldGen().safeSpawn(tryX);
+    }
+    this.player = new Player(playerSpawn.x * TILE_SIZE, playerSpawn.y * TILE_SIZE, PLAYER_SIZE, PLAYER_SIZE, playerImg);
   }
 
   public tick() {

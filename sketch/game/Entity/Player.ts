@@ -17,7 +17,7 @@ class Player extends Entity {
   private manaManager: ManaManager;
   showMenu: menuList;
   noClip: boolean = false;
-  playerCharacterHandler: PlayerCharacterHandler;
+  // playerCharacterHandler: PlayerCharacterHandler;
 
   constructor(x: number, y: number, w: number, h: number, img: p5.Image) {
     super(x, y, w, h, img);
@@ -38,7 +38,7 @@ class Player extends Entity {
     this.skillManager = new SkillManager();
     this.manaManager = new ManaManager();
     this.showMenu = menuList.game;
-    this.playerCharacterHandler = new PlayerCharacterHandler();
+    // this.playerCharacterHandler = new PlayerCharacterHandler();
   }
 
   tick() {
@@ -95,7 +95,7 @@ class Player extends Entity {
         Element.tick(this.x, this.y);
       });
     this.getManaManager().show();
-    this.playerCharacterHandler.show();
+    // this.playerCharacterHandler.show();
   }
 
   private move() {

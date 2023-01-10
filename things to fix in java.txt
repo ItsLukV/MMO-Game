@@ -1,0 +1,25 @@
+flip y
+javadoc everything
+multi-thread
+allow block break and place
+make chunks and worldGen auto
+make worldGen with noise
+
+????????????
+multiplayer
+rework collision
+collision only chunk
+
+
+
+
+
+
+
+
+
+
+
+
+
+

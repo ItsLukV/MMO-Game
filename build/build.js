@@ -1,7 +1,13 @@
 class Game {
-    constructor(world) {
-        this.world = world;
-        this.player = new Player(300, 100, PLAYER_SIZE, PLAYER_SIZE, playerImg);
+    constructor() {
+        this.world = new World();
+        let tryX = 2;
+        let playerSpawn = this.world.getWorldGen().safeSpawn(tryX);
+        while (playerSpawn.x === -1 || playerSpawn.y === -1) {
+            tryX++;
+            playerSpawn = this.world.getWorldGen().safeSpawn(tryX);
+        }
+        this.player = new Player(playerSpawn.x * TILE_SIZE, playerSpawn.y * TILE_SIZE, PLAYER_SIZE, PLAYER_SIZE, playerImg);
     }
     tick() {
         this.OffSetX = width / 2 - this.player.x - this.player.w / 2;
@@ -76,6 +82,7 @@ function preload() {
     tilesImg[tileList.Bedrock] = loadImage("assets/tiles/Bedrock.png");
     tilesImg[tileList.TempTile] = null;
     tilesImg[tileList.Water] = loadImage("assets/tiles/Water.png");
+    tilesImg[tileList.Dirt] = loadImage("assets/tiles/Dirt.png");
     itemImg[itemList.Air] = loadImage("assets/item/air.png");
     itemImg[itemList.Stone] = loadImage("assets/item/stone.png");
     itemImg[itemList.Grass] = loadImage("assets/item/grass.png");
@@ -95,10 +102,7 @@ function preload() {
 }
 function setup() {
     createCanvas(960, 640);
-    world = new World();
-    worldGenerator = new WorldGenerator();
-    world.setWorld(worldGenerator.getWorld());
-    game = new Game(world);
+    game = new Game();
     menu = new StartMenu();
 }
 function draw() {
@@ -150,6 +154,10 @@ function mousePressed() {
         case GameStateList.Playing:
             game.mousePressed();
             break;
+        case GameStateList.WorldGen:
+            break;
+        default:
+            throw "Missing GameState";
     }
 }
 class StartMenuButtons {
@@ -245,8 +253,8 @@ class Cheating {
         console.log(`Gived: ${itemList[itemId]}: ${amount}`);
     }
     setPlayer(x, y) {
-        game.getPlayer().x = x;
-        game.getPlayer().y = y;
+        game.getPlayer().x = x * TILE_SIZE;
+        game.getPlayer().y = y * TILE_SIZE;
     }
     changeTile(x, y, tileId) {
         game.getWorld().changeTile(x, y, tileId);
@@ -300,7 +308,6 @@ class Player extends Entity {
         this.skillManager = new SkillManager();
         this.manaManager = new ManaManager();
         this.showMenu = menuList.game;
-        this.playerCharacterHandler = new PlayerCharacterHandler();
     }
     tick() {
         if (!this.noClip) {
@@ -352,7 +359,6 @@ class Player extends Entity {
                 Element.tick(this.x, this.y);
             });
         this.getManaManager().show();
-        this.playerCharacterHandler.show();
     }
     move() {
         if (this.left)
@@ -462,75 +468,6 @@ class Player extends Entity {
     }
     getManaManager() {
         return this.manaManager;
-    }
-}
-class BodyJoint {
-    constructor() {
-        this.pos = new Vec(0, 0);
-    }
-    setLink(other) {
-        this.link = other;
-    }
-}
-class BodyPart {
-}
-class PlayerCharacterHandler {
-    constructor() {
-        this.body = new Body();
-        this.head = new Head();
-        this.leftArm = new LeftArm();
-        this.rightArm = new RightArm();
-        this.leftLeg = new LeftLeg();
-        this.rightLeg = new RightLeg();
-        this.body.rightArmJoint.setLink(this.rightArm.topJoint);
-    }
-    show() {
-        let player = game.getPlayer();
-        this.body.show(player.x - this.body.getW() / 2, player.y - this.body.getH() / 2);
-    }
-}
-class Body extends BodyPart {
-    constructor() {
-        super();
-        this.w = 32;
-        this.h = 64;
-        this.neckJoint = new BodyJoint();
-        this.rightArmJoint = new BodyJoint();
-        this.leftArmJoint = new BodyJoint();
-        this.rightLegJoint = new BodyJoint();
-        this.leftLegJoint = new BodyJoint();
-    }
-    show(x, y) {
-        rect(x, y, this.w, this.h);
-    }
-    getW() {
-        return this.w;
-    }
-    getH() {
-        return this.h;
-    }
-}
-class Head extends BodyPart {
-    show(x, y) {
-        throw new Error("Method not implemented.");
-    }
-}
-class LeftArm extends BodyPart {
-    show(x, y) {
-        throw new Error("Method not implemented.");
-    }
-}
-class LeftLeg extends BodyPart {
-    show(x, y) {
-        throw new Error("Method not implemented.");
-    }
-}
-class RightArm extends BodyPart {
-    show(x, y) { }
-}
-class RightLeg extends BodyPart {
-    show(x, y) {
-        throw new Error("Method not implemented.");
     }
 }
 class Menu {
@@ -929,7 +866,7 @@ class Mining extends Abilities {
         this.manaCost = 0;
     }
     abilitySelected() {
-        throw new Error("Method not implemented.");
+        console.info("A mining item a been selected");
     }
     abilityTick(playerX, playerY) {
         this.mouseHover();
@@ -937,7 +874,6 @@ class Mining extends Abilities {
     abilityClicked() {
         let tile = TileLookUp(mouseX - game.OffSetX, mouseY - game.OffSetY);
         let inventory = game.getPlayer().getInventory();
-        console.log(tile);
         if (!tile.isSolid())
             return;
         if (!tile.isBreakable())
@@ -951,7 +887,7 @@ class Mining extends Abilities {
         else if (tile.getBreakingLevel() === breakingImg.length - 1) {
             let worldTile = GameWorldToTile(tile.getX(), tile.getY());
             inventory.giveItem(tile.getItem());
-            game.getWorld().changeTile(worldTile.x, worldTile.y, tileList.TempTile, tile.getId(), tile.getRegenerationSpeed());
+            game.getWorld().changeTile(worldTile.x, worldTile.y, tileList.Air);
             game.getPlayer().getSkillManager().addXp(tile.xp());
         }
     }
@@ -980,7 +916,7 @@ class Teleport extends Abilities {
         this.diameter = diameter;
     }
     abilitySelected() {
-        throw new Error("Method not implemented.");
+        console.info("A teleportation item a been selected");
     }
     abilityClicked(playerX, playerY) {
         this.tpPlayer(playerX, playerY);
@@ -1161,6 +1097,7 @@ var tileList;
     tileList[tileList["Bedrock"] = 3] = "Bedrock";
     tileList[tileList["TempTile"] = 4] = "TempTile";
     tileList[tileList["Water"] = 5] = "Water";
+    tileList[tileList["Dirt"] = 6] = "Dirt";
 })(tileList || (tileList = {}));
 var itemList;
 (function (itemList) {
@@ -1379,6 +1316,23 @@ class TilesGen {
         };
         return new Tile(tile);
     }
+    static getDirtTile(x, y) {
+        let tile = {
+            x: x,
+            y: y,
+            w: TILE_SIZE,
+            id: tileList.Grass,
+            image: tilesImg[tileList.Dirt],
+            item: itemList.Grass,
+            breakingLevel: 0,
+            regenerationSpeed: 1000 * 60,
+            isSolid: true,
+            isBreakable: true,
+            hoverable: true,
+            xp: { xp: 1, type: SkillsList.mining },
+        };
+        return new Tile(tile);
+    }
     static getStoneTile(x, y) {
         let tile = {
             x: x,
@@ -1450,82 +1404,110 @@ class TilesGen {
                 return TilesGen.getTempTile(x, y, afterId, regenerationSpeed);
             case tileList.Water:
                 return TilesGen.getWaterTile(x, y);
+            case tileList.Dirt:
+                return TilesGen.getDirtTile(x, y);
         }
     }
 }
 class World {
     constructor() {
-        this.world = [
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
-            [3, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-            [3, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-            [3, 1, 0, 0, 0, 0, 0, 0, 1, 3],
-            [3, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-            [3, 0, 0, 0, 0, 0, 0, 0, 1, 3],
-            [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
-            [0, 0, 0, 0, 0, 0, 0, 0, 3, 0],
-        ];
-        this.tiles = new Array(this.world.length);
-        for (let i = 0; i < this.tiles.length; i++) {
-            this.tiles[i] = new Array(this.world[i].length);
-        }
-        this.load();
+        this.tiles = new Array();
+        this.worldGenerator = new WorldGenerator();
+        this.setWorld(this.worldGenerator.getWorld());
     }
-    load() {
-        for (let i = 0; i < this.world.length; i++) {
-            this.tiles[i] = [];
-            for (let j = 0; j < this.world[i].length; j++) {
-                this.tiles[i][j] = this.createTile(this.world[i][j], i, j);
+    load(world) {
+        for (let i = 0; i < world.length; i++) {
+            this.tiles[i] = new Array();
+            for (let j = 0; j < world[i].length; j++) {
+                this.tiles[i][j] = this.createTile(world[i][j], i, j);
             }
         }
     }
     show() {
-        for (let i = 0; i < this.world.length; i++) {
-            for (let j = 0; j < this.world[i].length; j++) {
+        for (let i = 0; i < this.tiles.length; i++) {
+            for (let j = 0; j < this.tiles[i].length; j++) {
                 this.tiles[i][j].show();
             }
         }
     }
     setWorld(world) {
-        this.world = world;
-        this.load();
+        this.load(world);
     }
     changeTile(x, y, tile, tempTile, regenerationSpeed) {
-        this.world[x][y] = tile;
         this.tiles[x][y] = this.createTile(tile, x, y, tempTile, regenerationSpeed);
     }
-    createTile(tileId, x, y, tempTile, regenerationSpeed) {
-        return TilesGen.tilePicker(tileId, x, y, tempTile, regenerationSpeed);
+    breakTile(x, y, regenerationSpeed) {
+        return TilesGen.tilePicker(tileList.Air, x, y, regenerationSpeed);
+    }
+    createTile(tileId, x, y, newTile, regenerationSpeed) {
+        return TilesGen.tilePicker(tileId, x, y, newTile, regenerationSpeed);
+    }
+    getWorldGen() {
+        return this.worldGenerator;
     }
 }
 class WorldGenerator {
-    constructor(worldWidth = 30, worldHeight = 10) {
-        this.world = new Array(worldWidth);
-        for (let i = 0; i < this.world.length; i++) {
-            this.world[i] = new Array(worldHeight);
-        }
-        for (let i = 0; i < this.world.length; i++) {
-            for (let j = 0; j < this.world[i].length; j++) {
-                this.world[i][j] = tileList.Air;
-            }
-        }
-        for (let i = 0; i < this.world.length; i++) {
-            for (let j = 0; j < 3; j++) {
-                this.world[i][this.world[i].length - j - 1] = tileList.Stone;
-            }
-        }
-        for (let i = 0; i < this.world.length; i++) {
-            this.world[i][this.world[i].length - 1] = tileList.Bedrock;
-        }
-        this.world[2][7] = 1;
-        this.world[3][6] = 2;
-        this.world[3][5] = 2;
-        this.world[5][7] = tileList.Water;
-        this.world[6][7] = tileList.Water;
+    constructor(worldWidth = 200, worldHeight = WorldGenerator.stoneBias + WorldGenerator.dirtBias + WorldGenerator.grassBias + 1) {
+        this.circleOccurrence = 0.1;
+        this.randomWorldGen(124168153476, worldWidth, worldHeight);
     }
     getWorld() {
         return this.world;
     }
+    randomWorldGen(seed, width, height) {
+        this.world = new Array(width);
+        for (let i = 0; i < width; i++) {
+            this.world[i] = new Array(height);
+        }
+        for (let i = 0; i < width; i++) {
+            for (let j = 0; j < height - 1; j++) {
+                this.world[i][j] = tileList.Air;
+            }
+        }
+        for (let i = 0; i < width; i++) {
+            this.world[i][height - 1] = tileList.Bedrock;
+        }
+        for (let i = 0; i < height; i++) {
+            this.world[0][i] = tileList.Bedrock;
+            this.world[width - 1][i] = tileList.Bedrock;
+        }
+        randomSeed(seed);
+        let circles = [];
+        for (let i = 1; i < width - 1; i++) {
+            if (random() < this.circleOccurrence) {
+                circles[circles.length] = i;
+            }
+        }
+        for (let x = 1; x < width - 1; x++) {
+            for (let y = 0; y < height - 1; y++) {
+                let dist = Infinity;
+                for (let i = 0; i < circles.length; i++) {
+                    dist = min(this.distance(x, y, circles[i], height), dist);
+                }
+                if (dist < WorldGenerator.stoneBias) {
+                    this.world[x][y] = tileList.Stone;
+                }
+                else if (dist < WorldGenerator.dirtBias + WorldGenerator.stoneBias) {
+                    this.world[x][y] = tileList.Dirt;
+                }
+                else if (dist < WorldGenerator.grassBias + WorldGenerator.dirtBias + WorldGenerator.stoneBias) {
+                    this.world[x][y] = tileList.Grass;
+                }
+            }
+        }
+    }
+    distance(x, y, circleX, circleY) {
+        return Math.sqrt(Math.pow(x - circleX, 2) + Math.pow(y - circleY, 2));
+    }
+    safeSpawn(x) {
+        for (let i = 0; i < this.world[x].length; i++) {
+            if (this.world[x][i] != tileList.Air)
+                return { x: x, y: i - 2 };
+        }
+        return { x: -1, y: -1 };
+    }
 }
+WorldGenerator.stoneBias = 3;
+WorldGenerator.dirtBias = 1;
+WorldGenerator.grassBias = 1;
 //# sourceMappingURL=build.js.map

@@ -160,7 +160,23 @@ function mousePressed() {
             throw "Missing GameState";
     }
 }
-class StartMenuButtons {
+class StartMenu {
+    constructor() {
+        this.startBtn = new StartButton("Start", width / 2 - 100, height / 3 - 50, 200, 100);
+        this.worldGen = new WorldGenButton("World Gen", width / 2 - 100, (height / 3) * 2 - 50, 200, 100);
+    }
+    show() {
+        this.startBtn.show();
+        this.startBtn.hover();
+        this.worldGen.show();
+        this.worldGen.hover();
+    }
+    clicked() {
+        this.startBtn.clicked();
+        this.worldGen.clicked();
+    }
+}
+class StartMenuButton {
     constructor(txt, x, y, w, h, txtSize) {
         this.txt = txt;
         this.x = x;
@@ -190,7 +206,6 @@ class StartMenuButtons {
             this.backgroundColor = 255;
         }
     }
-    clicked(e) { }
     mouseCollions() {
         if (mouseX > this.x && mouseX < this.x + this.w) {
             if (mouseY > this.y && mouseY < this.y + this.h) {
@@ -205,23 +220,7 @@ class StartMenuButtons {
         }
     }
 }
-class StartMenu {
-    constructor() {
-        this.startBtn = new StartButton("Start", width / 2 - 100, height / 3 - 50, 200, 100);
-        this.worldGen = new WorldGenButton("World Gen", width / 2 - 100, (height / 3) * 2 - 50, 200, 100);
-    }
-    show() {
-        this.startBtn.show();
-        this.startBtn.hover();
-        this.worldGen.show();
-        this.worldGen.hover();
-    }
-    clicked() {
-        this.startBtn.clicked();
-        this.worldGen.clicked();
-    }
-}
-class StartButton extends StartMenuButtons {
+class StartButton extends StartMenuButton {
     constructor(txt, x, y, w, h, txtSize) {
         super(txt, x, y, w, h, txtSize);
     }
@@ -231,7 +230,7 @@ class StartButton extends StartMenuButtons {
         }
     }
 }
-class WorldGenButton extends StartMenuButtons {
+class WorldGenButton extends StartMenuButton {
     constructor(txt, x, y, w, h, txtSize) {
         super(txt, x, y, w, h, txtSize);
     }
@@ -304,9 +303,9 @@ class Player extends Entity {
         this.left = false;
         this.right = false;
         this.inventory = new Inventory();
-        this.crafting = new Crafting();
-        this.skillManager = new SkillManager();
-        this.manaManager = new ManaManager();
+        this.crafting = new CraftingManager();
+        this.skills = new SkillManager();
+        this.mana = new ManaManager();
         this.showMenu = menuList.game;
     }
     tick() {
@@ -318,7 +317,7 @@ class Player extends Entity {
         }
         this.move();
         this.calcSpeed();
-        this.manaManager.tick();
+        this.mana.tick();
     }
     mousePressed() {
         switch (this.showMenu) {
@@ -464,22 +463,36 @@ class Player extends Entity {
         return this.crafting;
     }
     getSkillManager() {
-        return this.skillManager;
+        return this.skills;
     }
     getManaManager() {
-        return this.manaManager;
+        return this.mana;
     }
 }
 class Menu {
     constructor() { }
 }
-class Crafting extends Menu {
+class CraftingButton extends StartMenuButton {
+    constructor(txt, x, y, w, h, itemId, recipeId, txtSize) {
+        super(txt, x, y, w, h, txtSize);
+        this.itemId = itemId;
+        this.recipeId = recipeId;
+    }
+    clicked(crafting) {
+        if (this.mouseCollions()) {
+            if (crafting.hasEnoughMaterials(this.recipeId)) {
+                game.getPlayer().getInventory().giveItem(this.itemId);
+            }
+        }
+    }
+}
+class CraftingManager extends Menu {
     constructor() {
         super();
         this.widthOffset = 100;
         this.heightOffset = 100;
         this.buttons = [];
-        this.BUTTONSIZE = 100;
+        this.buttonSize = 100;
         this.craftingRecipes = [
             {
                 name: "test",
@@ -487,7 +500,7 @@ class Crafting extends Menu {
                     { name: itemList.Grass, amount: 1 },
                     { name: itemList.Stone, amount: 3 },
                 ],
-                item: itemList.Grass,
+                item: itemList.TeleportStick,
             },
             {
                 name: "recipe_pickaxe",
@@ -499,7 +512,7 @@ class Crafting extends Menu {
             },
         ];
         for (let i = 0; i < this.craftingRecipes.length; i++)
-            this.buttons.push(new CraftingButton(itemList[this.craftingRecipes[i].item], this.BUTTONSIZE * i + this.BUTTONSIZE, this.BUTTONSIZE, this.BUTTONSIZE, this.BUTTONSIZE, this.craftingRecipes[i].item, translateItemNameToItemReipe(this.craftingRecipes[i].name), 20));
+            this.buttons.push(new CraftingButton(itemList[this.craftingRecipes[i].item], this.buttonSize * i + this.buttonSize, this.buttonSize, this.buttonSize, this.buttonSize, this.craftingRecipes[i].item, translateItemNameToItemReipe(this.craftingRecipes[i].name), 20));
     }
     show() {
         push();
@@ -532,27 +545,13 @@ class Crafting extends Menu {
         return true;
     }
 }
-class CraftingButton extends StartMenuButtons {
-    constructor(txt, x, y, w, h, itemId, recipeId, txtSize) {
-        super(txt, x, y, w, h, txtSize);
-        this.itemId = itemId;
-        this.recipeId = recipeId;
-    }
-    clicked(crafting) {
-        if (this.mouseCollions()) {
-            if (crafting.hasEnoughMaterials(this.recipeId)) {
-                game.getPlayer().getInventory().giveItem(this.itemId);
-            }
-        }
-    }
-}
 class Inventory {
     constructor() {
         this.showBackpack = false;
         this.selected = null;
-        this.backpack = new Array(Inventory.BACKPACKWITDH);
+        this.backpack = new Array(Inventory.BackpackWidth);
         for (let i = 0; i < this.backpack.length; i++) {
-            this.backpack[i] = new Array(Inventory.BACKPACKHEIGHT);
+            this.backpack[i] = new Array(Inventory.BackpackHeight);
         }
         for (let i = 0; i < this.backpack.length; i++) {
             for (let j = 0; j < this.backpack[i].length; j++) {
@@ -695,8 +694,8 @@ class Inventory {
     }
 }
 Inventory.SlotSize = 74;
-Inventory.BACKPACKWITDH = 10;
-Inventory.BACKPACKHEIGHT = 3;
+Inventory.BackpackWidth = 10;
+Inventory.BackpackHeight = 3;
 class InventorySlot {
     constructor(item, InventoryPosX, InventoryPosY) {
         this.items = [];
@@ -745,8 +744,8 @@ class Item {
     }
     showItem() {
         let itemBoxOffset = (Inventory.SlotSize - this.width) / 2;
-        let offsetX = width / 2 - (Inventory.SlotSize * Inventory.BACKPACKWITDH) / 2;
-        let offsetY = height / 2 - (Inventory.SlotSize * Inventory.BACKPACKHEIGHT) / 2;
+        let offsetX = width / 2 - (Inventory.SlotSize * Inventory.BackpackWidth) / 2;
+        let offsetY = height / 2 - (Inventory.SlotSize * Inventory.BackpackHeight) / 2;
         image(this.img, this.InventoryPosX * Inventory.SlotSize + offsetX + itemBoxOffset, this.InventoryPosY * Inventory.SlotSize + offsetY + itemBoxOffset, this.width, this.width);
     }
     getStackSize() {
@@ -882,8 +881,9 @@ class Mining extends Abilities {
             return;
         if (inventory.getSelectedItemId() != itemList.Pickaxe)
             return;
-        if (tile.getBreakingLevel() < breakingImg.length - 1)
+        if (tile.getBreakingLevel() < breakingImg.length - 1) {
             tile.setBreakingLevel(tile.getBreakingLevel() + 1);
+        }
         else if (tile.getBreakingLevel() === breakingImg.length - 1) {
             let worldTile = GameWorldToTile(tile.getX(), tile.getY());
             inventory.giveItem(tile.getItem());
@@ -989,7 +989,7 @@ class SkillManager {
         this.widthOffset = 100;
         this.heightOffset = 100;
         this.mining = new SkillMining();
-        this.bars[SkillsList.mining] = new Bar(50 + this.widthOffset, 50 + this.heightOffset, 200, 20, this.mining.getBarColor());
+        this.bars[SkillsList.mining] = new Bar(150, 150, 300, 20, this.mining.getBarColor(), 5);
     }
     addXp(xpOrb) {
         switch (xpOrb.type) {
@@ -1002,11 +1002,11 @@ class SkillManager {
         push();
         translate(-game.OffSetX, -game.OffSetY);
         rect(this.widthOffset, this.heightOffset, width - this.widthOffset * 2, height - this.heightOffset * 2);
+        pop();
         this.bars[SkillsList.mining].setMinValue(lvlReq[this.mining.getLvl()]);
         this.bars[SkillsList.mining].setMaxValue(lvlReq[this.mining.getLvl() + 1]);
         this.bars[SkillsList.mining].setValue(this.mining.getXp());
         this.bars[SkillsList.mining].show();
-        pop();
     }
 }
 class SkillMining extends Skill {
@@ -1087,8 +1087,8 @@ const TILE_SIZE = 64;
 const PLAYER_SIZE = 32;
 const WORLDHEIGHT = 10;
 const WORLDWIDTH = 30;
-const offsetX = canvasWidth / 2 - (Inventory.SlotSize * Inventory.BACKPACKWITDH) / 2;
-const offsetY = canvasHeight / 2 - (Inventory.SlotSize * Inventory.BACKPACKHEIGHT) / 2;
+const offsetX = canvasWidth / 2 - (Inventory.SlotSize * Inventory.BackpackWidth) / 2;
+const offsetY = canvasHeight / 2 - (Inventory.SlotSize * Inventory.BackpackHeight) / 2;
 var tileList;
 (function (tileList) {
     tileList[tileList["Air"] = 0] = "Air";
@@ -1219,11 +1219,12 @@ class Tile {
         this.breakingLevel = this.breakingLevel;
         this.regenerationSpeed = obj.regenerationSpeed;
         this.solid = obj.isSolid;
+        this._xp = obj.xp;
         this.breakable = obj.isBreakable;
         this.hoverable = obj.hoverable;
     }
     xp() {
-        return { xp: 0, type: SkillsList.mining };
+        return this._xp;
     }
     show() {
         image(this.image, this.x, this.y, this.w, this.w);

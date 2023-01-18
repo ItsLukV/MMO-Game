@@ -12,9 +12,9 @@ class Player extends Entity {
   private left: boolean;
   private right: boolean;
   private inventory: Inventory;
-  private crafting: Crafting;
-  private skillManager: SkillManager;
-  private manaManager: ManaManager;
+  private crafting: CraftingManager;
+  private skills: SkillManager;
+  private mana: ManaManager;
   showMenu: menuList;
   noClip: boolean = false;
   // playerCharacterHandler: PlayerCharacterHandler;
@@ -34,9 +34,9 @@ class Player extends Entity {
     this.left = false;
     this.right = false;
     this.inventory = new Inventory();
-    this.crafting = new Crafting();
-    this.skillManager = new SkillManager();
-    this.manaManager = new ManaManager();
+    this.crafting = new CraftingManager();
+    this.skills = new SkillManager();
+    this.mana = new ManaManager();
     this.showMenu = menuList.game;
     // this.playerCharacterHandler = new PlayerCharacterHandler();
   }
@@ -52,7 +52,7 @@ class Player extends Entity {
     this.move();
     this.calcSpeed();
 
-    this.manaManager.tick();
+    this.mana.tick();
   }
 
   mousePressed() {
@@ -204,10 +204,10 @@ class Player extends Entity {
   }
 
   public getSkillManager() {
-    return this.skillManager;
+    return this.skills;
   }
 
   public getManaManager(): ManaManager {
-    return this.manaManager;
+    return this.mana;
   }
 }

@@ -6,8 +6,8 @@ const PLAYER_SIZE: number = 32;
 const WORLDHEIGHT = 10;
 const WORLDWIDTH = 30;
 
-const offsetX = canvasWidth / 2 - (Inventory.SlotSize * Inventory.BACKPACKWITDH) / 2;
-const offsetY = canvasHeight / 2 - (Inventory.SlotSize * Inventory.BACKPACKHEIGHT) / 2;
+const offsetX = canvasWidth / 2 - (Inventory.SlotSize * Inventory.BackpackWidth) / 2;
+const offsetY = canvasHeight / 2 - (Inventory.SlotSize * Inventory.BackpackHeight) / 2;
 
 enum tileList {
   Air = 0,

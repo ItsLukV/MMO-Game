@@ -1,20 +1,13 @@
-class StartMenuButtons {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  txt: string;
-  txtSize: number;
-  backgroundColor: number;
+class StartMenuButton {
+  private x: number;
+  private y: number;
+  private w: number;
+  private h: number;
+  private txt: string;
+  private txtSize: number;
+  private backgroundColor: number;
 
-  constructor(
-    txt: string,
-    x: number,
-    y: number,
-    w: number,
-    h: number,
-    txtSize?: number
-  ) {
+  constructor(txt: string, x: number, y: number, w: number, h: number, txtSize?: number) {
     this.txt = txt;
     this.x = x;
     this.y = y;
@@ -35,13 +28,7 @@ class StartMenuButtons {
     let textheight = textAscent() + textDescent();
     fill(0);
 
-    text(
-      this.txt,
-      this.x,
-      this.y + this.h / 2 - textheight / 2,
-      this.w,
-      this.h
-    );
+    text(this.txt, this.x, this.y + this.h / 2 - textheight / 2, this.w, this.h);
     pop();
   }
 
@@ -52,8 +39,6 @@ class StartMenuButtons {
       this.backgroundColor = 255;
     }
   }
-
-  clicked(e: any) {}
 
   protected mouseCollions(): boolean {
     if (mouseX > this.x && mouseX < this.x + this.w) {

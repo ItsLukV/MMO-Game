@@ -16,8 +16,10 @@ class Mining extends Abilities {
     if (!tile.isBreakable()) return;
     if (inventory.showBackpack) return;
     if (inventory.getSelectedItemId() != itemList.Pickaxe) return;
-    if (tile.getBreakingLevel() < breakingImg.length - 1) tile.setBreakingLevel(tile.getBreakingLevel() + 1);
-    else if (tile.getBreakingLevel() === breakingImg.length - 1) {
+
+    if (tile.getBreakingLevel() < breakingImg.length - 1) {
+      tile.setBreakingLevel(tile.getBreakingLevel() + 1);
+    } else if (tile.getBreakingLevel() === breakingImg.length - 1) {
       let worldTile = GameWorldToTile(tile.getX(), tile.getY());
       inventory.giveItem(tile.getItem());
       // game.getWorld().changeTile(worldTile.x, worldTile.y, tileList.TempTile, tile.getId(), tile.getRegenerationSpeed());

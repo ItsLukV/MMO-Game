@@ -1,12 +1,6 @@
-class StartButton extends StartMenuButtons {
-  constructor(
-    txt: string,
-    x: number,
-    y: number,
-    w: number,
-    h: number,
-    txtSize?: number
-  ) {
+/// <reference path="StartMenuButton.ts"/>
+class StartButton extends StartMenuButton {
+  constructor(txt: string, x: number, y: number, w: number, h: number, txtSize?: number) {
     super(txt, x, y, w, h, txtSize);
   }
 

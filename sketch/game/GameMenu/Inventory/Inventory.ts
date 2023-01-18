@@ -5,12 +5,12 @@ class Inventory {
   public selected: InventorySlot = null;
 
   static SlotSize: number = 74;
-  static BACKPACKWITDH: number = 10;
-  static BACKPACKHEIGHT: number = 3;
+  static BackpackWidth: number = 10;
+  static BackpackHeight: number = 3;
   constructor() {
-    this.backpack = new Array(Inventory.BACKPACKWITDH);
+    this.backpack = new Array(Inventory.BackpackWidth);
     for (let i = 0; i < this.backpack.length; i++) {
-      this.backpack[i] = new Array(Inventory.BACKPACKHEIGHT);
+      this.backpack[i] = new Array(Inventory.BackpackHeight);
     }
     for (let i = 0; i < this.backpack.length; i++) {
       for (let j = 0; j < this.backpack[i].length; j++) {

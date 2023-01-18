@@ -2,9 +2,9 @@ class WorldGenerator {
   private world: number[][];
 
   private circleOccurrence: number = 0.1;
-  static stoneBias: number = 3;
-  static dirtBias: number = 1;
-  static grassBias: number = 1;
+  private static stoneBias: number = 3;
+  private static dirtBias: number = 1;
+  private static grassBias: number = 1;
 
   constructor(worldWidth: number = 200, worldHeight: number = WorldGenerator.stoneBias + WorldGenerator.dirtBias + WorldGenerator.grassBias + 1) {
     // this.world = new Array(worldWidth);
@@ -85,7 +85,7 @@ class WorldGenerator {
       }
     }
   }
-  private distance(x: number, y: number, circleX: number, circleY: number) {
+  private distance(x: number, y: number, circleX: number, circleY: number): number {
     return Math.sqrt(Math.pow(x - circleX, 2) + Math.pow(y - circleY, 2));
   }
 

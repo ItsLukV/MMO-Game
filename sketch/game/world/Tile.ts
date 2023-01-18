@@ -10,6 +10,8 @@ class Tile {
   private solid: boolean;
   private breakable: boolean;
   private hoverable: boolean;
+  private _xp: XP;
+
   constructor(obj: TileInput) {
     this.x = obj.x * TILE_SIZE;
     this.y = obj.y * TILE_SIZE;
@@ -20,12 +22,13 @@ class Tile {
     this.breakingLevel = this.breakingLevel;
     this.regenerationSpeed = obj.regenerationSpeed;
     this.solid = obj.isSolid;
+    this._xp = obj.xp;
     this.breakable = obj.isBreakable;
     this.hoverable = obj.hoverable;
   }
 
-  xp(): XP {
-    return { xp: 0, type: SkillsList.mining };
+  public xp(): XP {
+    return this._xp;
   }
 
   public show() {
@@ -33,7 +36,8 @@ class Tile {
     image(breakingImg[this.breakingLevel], this.x, this.y, this.w, this.w);
   }
 
-  // Getters
+  // Getters and Setters
+  // ...
 
   public isHoverable() {
     return this.hoverable;

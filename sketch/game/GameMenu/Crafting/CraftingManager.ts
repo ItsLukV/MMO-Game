@@ -1,13 +1,13 @@
-class Crafting extends Menu {
-  widthOffset: number = 100;
-  heightOffset: number = 100;
-  craftingRecipes: {
+class CraftingManager extends Menu {
+  private widthOffset: number = 100;
+  private heightOffset: number = 100;
+  private craftingRecipes: {
     name: string;
     items_requirement: { name: itemList; amount: number }[];
     item: itemList;
   }[];
-  buttons: CraftingButton[] = [];
-  private BUTTONSIZE: number = 100;
+  private buttons: CraftingButton[] = [];
+  private buttonSize: number = 100;
   constructor() {
     super();
     this.craftingRecipes = [
@@ -17,7 +17,7 @@ class Crafting extends Menu {
           { name: itemList.Grass, amount: 1 },
           { name: itemList.Stone, amount: 3 },
         ],
-        item: itemList.Grass,
+        item: itemList.TeleportStick,
       },
       {
         name: "recipe_pickaxe",
@@ -32,10 +32,10 @@ class Crafting extends Menu {
       this.buttons.push(
         new CraftingButton(
           itemList[this.craftingRecipes[i].item],
-          this.BUTTONSIZE * i + this.BUTTONSIZE,
-          this.BUTTONSIZE,
-          this.BUTTONSIZE,
-          this.BUTTONSIZE,
+          this.buttonSize * i + this.buttonSize,
+          this.buttonSize,
+          this.buttonSize,
+          this.buttonSize,
           this.craftingRecipes[i].item,
           translateItemNameToItemReipe(this.craftingRecipes[i].name),
           20

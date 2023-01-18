@@ -1,4 +1,4 @@
-class CraftingButton extends StartMenuButtons {
+class CraftingButton extends StartMenuButton {
   itemId: itemList;
   recipeId: craftingList;
   constructor(txt: string, x: number, y: number, w: number, h: number, itemId: itemList, recipeId: craftingList, txtSize?: number) {
@@ -7,7 +7,7 @@ class CraftingButton extends StartMenuButtons {
     this.recipeId = recipeId;
   }
 
-  clicked(crafting: Crafting): void {
+  clicked(crafting: CraftingManager): void {
     if (this.mouseCollions()) {
       if (crafting.hasEnoughMaterials(this.recipeId)) {
         game.getPlayer().getInventory().giveItem(this.itemId);
